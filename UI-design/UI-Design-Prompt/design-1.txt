@@ -1,0 +1,1035 @@
+# Build Brief — Personal Apps & Websites Showcase
+
+Build a polished personal portfolio web app for showcasing my **mobile apps and websites**.
+
+The goal is to make the site feel **handcrafted, creative, personal, and memorable** — NOT like a typical AI-generated SaaS landing page.
+
+## Tech Stack
+
+Use:
+
+* React.js
+* Vite
+* TypeScript
+* Tailwind CSS
+* Lucide React for icons
+* React Router for navigation
+* No backend required
+* Static project data stored locally in TypeScript/JSON
+
+The application should be fully responsive across:
+
+* Desktop
+* Tablet
+* Mobile
+
+---
+
+# 1. Overall Design Direction
+
+The visual style should feel like a:
+
+> **Developer's personal sketchbook / digital workspace / creative notebook**
+
+Think:
+
+* Hand-drawn elements
+* Paper/card textures
+* Sticky notes
+* Doodles
+* Sketch-style arrows
+* Slightly imperfect borders
+* Warm off-white backgrounds
+* Black ink typography
+* Small handwritten annotations
+* Occasional pastel accent colors
+* Subtle shadows
+* Editorial composition
+* Asymmetric layouts
+
+Avoid the common:
+
+* Generic SaaS dashboard
+* Excessive gradients
+* Glassmorphism everywhere
+* Huge rounded rectangles
+* Purple/blue AI landing page aesthetic
+* Perfectly symmetrical layouts
+* Excessive animations
+* Corporate portfolio appearance
+
+The website should look like a developer has **physically designed it in a notebook and then converted it into a website**.
+
+---
+
+# 2. Color System
+
+Primary background:
+
+* Warm paper / off-white: `#F7F4EC`
+
+Primary text:
+
+* Ink black: `#111111`
+
+Secondary text:
+
+* Muted charcoal: `#555555`
+
+Use accent colors sparingly:
+
+* Yellow marker: `#F4C542`
+* Soft green: `#8BCF8B`
+* Lavender: `#B8A4FF`
+* Coral: `#FF8A80`
+* Mint: `#7DDEC8`
+
+Dark mode should use:
+
+* Deep charcoal / almost black background
+* Off-white text
+* Muted pastel accents
+
+Do NOT make every element colorful.
+
+---
+
+# 3. Typography
+
+Use a combination of:
+
+### Main font
+
+A clean modern sans-serif such as:
+
+* Inter
+* Geist
+* DM Sans
+
+### Handwritten font
+
+Use a handwritten font for:
+
+* Small annotations
+* Section labels
+* Doodles
+* Quotes
+* Personal notes
+
+For example:
+
+* Caveat
+* Patrick Hand
+* Kalam
+
+The handwritten font should be used sparingly.
+
+Example:
+
+Normal:
+
+"Mobile Apps"
+
+Handwritten annotation:
+
+"things I've been building →"
+
+---
+
+# 4. Layout Philosophy
+
+Do NOT make everything a traditional centered grid.
+
+Use:
+
+* Offset cards
+* Asymmetrical spacing
+* Different card sizes
+* Notebook-style sections
+* Sticky notes
+* Small floating annotations
+* Hand-drawn arrows
+* Rotated elements by 1–3 degrees
+* Occasional overlapping elements
+
+However, keep the UI usable and clean.
+
+The design should feel intentionally imperfect, not messy.
+
+---
+
+# 5. Navigation
+
+Create a simple left sidebar on desktop.
+
+Sidebar:
+
+```text
+RK
+
+⌂ Home
+▣ Apps
+◎ Websites
+♙ About
+
+────────────
+
+☾ Dark Mode
+
+Build
+Ideas
+Ship
+Repeat
+↗
+```
+
+The sidebar should feel like a notebook index.
+
+On mobile:
+
+* Replace sidebar with a simple top navigation
+* Show `RK` logo/name
+* Hamburger menu
+* Slide-out navigation
+
+Navigation links:
+
+* Home
+* Apps
+* Websites
+* About
+
+---
+
+# 6. HOME PAGE
+
+Create a visually interesting hero section.
+
+Example content:
+
+```text
+Hey, I'm
+
+Rahul Kumar
+
+I build apps, websites
+and little ideas that
+make life easier.
+
+[ Explore My Work → ]
+
+"Small tools. Big impact."
+```
+
+Do NOT make the hero a standard centered SaaS hero.
+
+Use an editorial / desk composition.
+
+### Hero visual
+
+On the right side create an illustration / workspace scene:
+
+* Developer sitting at desk
+* Laptop
+* Phone
+* Plant
+* Notebook
+* Coffee cup
+* Small sticky notes
+* Code symbol
+* Books
+
+The visual should communicate:
+
+> developer + building products + creativity
+
+If external image assets are unavailable, create a CSS/HTML composition or use a placeholder image component that can easily be replaced later.
+
+---
+
+# 7. Hero Decorations
+
+Add small handwritten annotations around the hero:
+
+```text
+Still building...
+```
+
+```text
+A better internet
+together :)
+```
+
+```text
+Ideas
+↓
+Products
+↓
+Freedom
+```
+
+Add hand-drawn arrows pointing toward important elements.
+
+Add a yellow marker-style underline below:
+
+```text
+Rahul Kumar
+```
+
+Use CSS rather than actual images wherever practical.
+
+---
+
+# 8. HOME PAGE — Statistics
+
+Under the hero, create a small notebook-style statistics area.
+
+Example:
+
+```text
+5+             8+             10K+             ∞
+Mobile Apps    Web Projects   Downloads         Ideas
+```
+
+Keep it minimal.
+
+Do not make it look like a corporate KPI dashboard.
+
+---
+
+# 9. FEATURED APPS
+
+Create a section:
+
+```text
+// APPS
+
+Things I've built
+for phones ↓
+```
+
+Show 3 featured mobile apps.
+
+Example:
+
+### HabitTrack
+
+Category:
+Productivity
+
+Description:
+
+"Build better habits, one day at a time."
+
+Metadata:
+
+```text
+v1.0.0     10K+ downloads
+```
+
+Button:
+
+```text
+↓ Download APK
+```
+
+The button must trigger the APK download.
+
+---
+
+# 10. APP DOWNLOAD FUNCTIONALITY
+
+Each app object should contain:
+
+```typescript
+type AppProject = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  version: string;
+  downloads?: string;
+  icon: string;
+  apkUrl: string;
+  githubUrl?: string;
+};
+```
+
+Example:
+
+```typescript
+const apps: AppProject[] = [
+  {
+    id: "habit-track",
+    name: "HabitTrack",
+    description: "Build better habits, one day at a time.",
+    category: "Productivity",
+    version: "1.0.0",
+    downloads: "10K+",
+    icon: "/icons/habittrack.png",
+    apkUrl: "https://github.com/USERNAME/REPO/releases/download/v1.0.0/app-release.apk",
+    githubUrl: "https://github.com/USERNAME/REPO"
+  }
+];
+```
+
+The Download APK button should:
+
+1. Open/download the APK directly.
+2. Use the GitHub APK URL.
+3. Prefer an `<a>` element with the `download` attribute where possible.
+4. If the browser does not allow forced download for a cross-origin GitHub URL, gracefully navigate to the APK URL so Android/browser download begins normally.
+
+Example:
+
+```tsx
+<a
+  href={app.apkUrl}
+  download
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  ↓ Download APK
+</a>
+```
+
+Make the download action visually obvious.
+
+---
+
+# 11. APPS PAGE
+
+Create a dedicated `/apps` page.
+
+Header:
+
+```text
+// APPS
+
+Mobile Apps
+
+Simple. Useful.
+Made with ❤️
+
+Download and try my Android apps.
+```
+
+Add:
+
+* Search
+* Category filters
+* All
+* Productivity
+* Tools
+* Social
+* Entertainment
+* Other
+
+Use a responsive grid.
+
+Desktop:
+
+3 columns
+
+Tablet:
+
+2 columns
+
+Mobile:
+
+1 column
+
+---
+
+# 12. APP CARD DESIGN
+
+Do NOT create generic SaaS cards.
+
+Make them feel like objects sitting on a notebook.
+
+Each card should contain:
+
+* App icon
+* App name
+* Category
+* Description
+* Version
+* Download count
+* Download button
+* Optional GitHub button
+
+Example:
+
+```text
+┌─────────────────────────────┐
+│                             │
+│   [ICON]                    │
+│                             │
+│   HabitTrack                │
+│   Productivity              │
+│                             │
+│   Build better habits,      │
+│   one day at a time.        │
+│                             │
+│   v1.0.0    10K+ downloads  │
+│                             │
+│   [ ↓ Download APK ]        │
+│                             │
+└─────────────────────────────┘
+```
+
+Add subtle variations to cards:
+
+* Slight rotation
+* Different accent underline
+* Tiny doodle
+* Small handwritten note
+
+Do not rotate every card.
+
+---
+
+# 13. WEBSITES PAGE
+
+Create `/websites`.
+
+Header:
+
+```text
+// WEBSITES
+
+Web Projects
+
+A collection of websites
+I've built and shipped.
+
+"Live & running :)"
+```
+
+Website cards should contain:
+
+* Screenshot
+* Name
+* Description
+* Category
+* External link icon
+* Visit Website button
+
+Example:
+
+### TaskFlow
+
+"A simple task management web app to stay productive."
+
+Button:
+
+```text
+↗ Visit Website
+```
+
+The button should open the website in a new tab.
+
+Use:
+
+```tsx
+<a
+  href={website.url}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Visit Website ↗
+</a>
+```
+
+---
+
+# 14. WEBSITE CARD VISUAL DESIGN
+
+Website cards should resemble small printed screenshots / polaroids.
+
+Example:
+
+```text
+       ┌───────────────────────┐
+       │                       │
+       │   WEBSITE SCREENSHOT  │
+       │                       │
+       ├───────────────────────┤
+       │ TaskFlow          ↗   │
+       │                       │
+       │ A simple task         │
+       │ management app.       │
+       │                       │
+       │ [ Visit Website ]     │
+       └───────────────────────┘
+```
+
+Allow cards to have slight variations in size.
+
+---
+
+# 15. ABOUT PAGE
+
+Create a personal "About Me" section.
+
+Avoid the typical corporate developer bio.
+
+Use a notebook / scrapbook layout.
+
+Example:
+
+```text
+// ABOUT
+
+About Me
+
+I'm a developer who loves
+turning ideas into real products.
+
+I enjoy building:
+
+⌘ Useful products
+◇ Learning new technologies
+♧ Small experiments
+☕ Things powered by coffee
+```
+
+Add a polaroid-style image area.
+
+Place a handwritten caption below:
+
+```text
+Exploring new places
+for new ideas :)
+```
+
+Add a handwritten speech bubble:
+
+```text
+Let's build
+something cool
+together!
+```
+
+---
+
+# 16. MOBILE EXPERIENCE
+
+Mobile should NOT simply be a compressed desktop layout.
+
+Create a deliberate mobile composition.
+
+Mobile header:
+
+```text
+RK                           ☰
+```
+
+Hero:
+
+```text
+Ideas
+into
+Apps
+
+🚀
+```
+
+Then:
+
+```text
+Small Projects
+Big Impact
+```
+
+Buttons:
+
+```text
+View Apps →
+View Websites
+```
+
+Use stacked cards.
+
+Ensure:
+
+* Touch targets are at least ~44px
+* No horizontal overflow
+* Text remains readable
+* Cards have comfortable spacing
+* Download buttons are easy to tap
+
+---
+
+# 17. DARK MODE
+
+Add a dark mode toggle.
+
+Dark mode should feel like:
+
+> developer's desk at night
+
+Use:
+
+* Charcoal background
+* Warm white text
+* Subtle paper/noise effect
+* Pastel accent colors
+
+Do not simply invert colors.
+
+Dark mode should have its own visual personality.
+
+---
+
+# 18. MICRO INTERACTIONS
+
+Use subtle animations.
+
+Examples:
+
+### Card hover
+
+* Slight lift
+* Tiny rotation correction
+* Shadow increases
+
+### Buttons
+
+* Small movement on hover
+* Arrow moves slightly right
+
+### Download
+
+When clicked:
+
+```text
+↓ Download APK
+```
+
+temporarily becomes:
+
+```text
+✓ Starting Download
+```
+
+Then returns to normal.
+
+### Navigation
+
+Use subtle transitions.
+
+Avoid:
+
+* Excessive parallax
+* Huge page transitions
+* Bouncy animations
+* Distracting effects
+
+---
+
+# 19. DOODLES
+
+Create reusable doodle components.
+
+Examples:
+
+```tsx
+<ArrowDoodle />
+<StarDoodle />
+<CircleDoodle />
+<UnderlineDoodle />
+<SpeechBubble />
+<StickyNote />
+```
+
+These can be CSS/SVG.
+
+Use hand-drawn SVG paths where possible.
+
+Examples of annotations:
+
+```text
+still building...
+```
+
+```text
+good ideas → better products
+```
+
+```text
+made with curiosity :)
+```
+
+```text
+ship it!
+```
+
+---
+
+# 20. REUSABLE COMPONENT ARCHITECTURE
+
+Create components such as:
+
+```text
+src/
+  components/
+    Navbar.tsx
+    Sidebar.tsx
+    MobileMenu.tsx
+    AppCard.tsx
+    WebsiteCard.tsx
+    DownloadButton.tsx
+    DoodleArrow.tsx
+    StickyNote.tsx
+    Polaroid.tsx
+    SectionTitle.tsx
+    ThemeToggle.tsx
+
+  pages/
+    Home.tsx
+    Apps.tsx
+    Websites.tsx
+    About.tsx
+
+  data/
+    apps.ts
+    websites.ts
+
+  types/
+    project.ts
+
+  App.tsx
+  main.tsx
+  index.css
+```
+
+Keep project data separate from UI components.
+
+---
+
+# 21. DATA MODEL
+
+Use TypeScript interfaces.
+
+```typescript
+export interface AppProject {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  version: string;
+  downloads?: string;
+  icon: string;
+  apkUrl: string;
+  githubUrl?: string;
+}
+
+export interface WebsiteProject {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  screenshot: string;
+  url: string;
+}
+```
+
+This should make adding a new project extremely easy.
+
+For example, adding an app should only require adding an object to `apps.ts`.
+
+---
+
+# 22. IMPORTANT UX REQUIREMENT
+
+The primary purpose of the website is:
+
+> Quickly show everything I've built and let people try it.
+
+Therefore:
+
+* Apps → obvious Download APK button
+* Websites → obvious Visit Website button
+* GitHub → optional secondary action
+* Descriptions → short
+* No unnecessary paragraphs
+* No login
+* No backend
+* No database
+
+The site should feel fast.
+
+---
+
+# 23. SEO
+
+Add:
+
+* Proper page titles
+* Meta descriptions
+* Open Graph metadata
+* Semantic HTML
+* Accessible buttons/links
+* Alt text for images
+
+Example:
+
+```text
+Rahul Kumar — Apps & Web Projects
+```
+
+---
+
+# 24. RESPONSIVENESS
+
+Breakpoints:
+
+```text
+Mobile: < 640px
+Tablet: 640–1024px
+Desktop: > 1024px
+```
+
+Desktop should have the strongest editorial composition.
+
+Mobile should become a clean vertical scrapbook.
+
+---
+
+# 25. VISUAL DETAILS THAT ARE IMPORTANT
+
+Please prioritize these details:
+
+### Paper
+
+Use subtle paper texture/noise.
+
+### Borders
+
+Use imperfect-looking borders rather than perfectly sterile cards.
+
+### Shadows
+
+Use soft physical shadows as if cards are sitting on paper.
+
+### Rotation
+
+Use tiny rotations:
+
+```css
+transform: rotate(-1deg);
+```
+
+or
+
+```css
+transform: rotate(1deg);
+```
+
+Use sparingly.
+
+### Underlines
+
+Create marker-style underlines using pseudo-elements.
+
+### Sticky notes
+
+Small yellow notes can contain:
+
+```text
+Still building...
+```
+
+or
+
+```text
+Ship it!
+```
+
+### Doodles
+
+Use arrows, stars, circles and hand-drawn lines.
+
+---
+
+# 26. DO NOT DO THESE THINGS
+
+Do NOT produce:
+
+❌ Generic AI portfolio
+
+❌ Standard centered hero
+
+❌ Purple gradient background
+
+❌ Excessive glassmorphism
+
+❌ Huge "Welcome to my portfolio" heading
+
+❌ Corporate developer résumé layout
+
+❌ Generic 3-column SaaS dashboard
+
+❌ Excessive rounded cards
+
+❌ Excessive animations
+
+❌ Stock photography
+
+❌ Huge paragraphs
+
+❌ Fake statistics
+
+The result should feel like a **real developer's personal creative space**.
+
+---
+
+# 27. CONTENT
+
+Use realistic placeholder projects initially.
+
+Mobile apps:
+
+* HabitTrack
+* QuickNotes
+* ScanPro
+* MemeHub
+* SpendWise
+* FitBuddy
+
+Websites:
+
+* TaskFlow
+* ImageKit Pro
+* LinkHub
+* WeatherNow
+* QuoteDaily
+* DevUtils
+
+Make it easy for me to replace these with my real projects later.
+
+---
+
+# 28. FINAL QUALITY BAR
+
+Before finishing:
+
+1. Run the application.
+2. Verify every route.
+3. Verify responsive behavior.
+4. Verify dark mode.
+5. Verify APK download buttons.
+6. Verify external website links.
+7. Verify no broken images.
+8. Verify no horizontal scrolling on mobile.
+9. Verify keyboard accessibility.
+10. Verify TypeScript has no errors.
+11. Verify there are no console errors.
+12. Make sure the UI does NOT look like a generic AI-generated SaaS template.
+
+The final result should feel like:
+
+> **"A developer's physical sketchbook turned into an interactive website."**
+
+It should be creative enough that someone remembers the website after visiting it once.
