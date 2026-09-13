@@ -1,110 +1,78 @@
-import type { CSSProperties } from 'react'
-import { Download, ExternalLink, GitBranch, Sparkles } from 'lucide-react'
+import { ArrowDown, ArrowRight, Code2, Coffee, Download, ExternalLink, Globe2, Home, Menu, Moon, Smartphone, UserRound, X } from 'lucide-react'
+import { useState } from 'react'
+import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
+import heroImage from '../UI-design/img/image.png'
 
-type Project = {
-  name: string
-  type: 'app' | 'website'
-  description: string
-  url: string
-  accent: string
-  initials: string
-}
-
-const projects: Project[] = [
-  {
-    name: 'Use-it',
-    type: 'app',
-    description: 'An expiry item notifier that helps everyday things get used in time.',
-    url: 'https://github.com/iamrahul25/useit/blob/master/builds/useit-v1.0.0-release.apk',
-    accent: '#f3a712',
-    initials: 'UI',
-  },
-  {
-    name: 'Habit-app',
-    type: 'app',
-    description: 'A focused habit maker and notifier for building a rhythm that sticks.',
-    url: 'https://github.com/iamrahul25/habit-app/blob/master/build-apk/app-release.apk',
-    accent: '#e56b6f',
-    initials: 'HA',
-  },
+type AppProject = { name: string; description: string; version: string; downloads: string; accent: string; initials: string; apkUrl: string }
+const apps: AppProject[] = [
+  { name: 'Use-it', description: 'Use everyday things before they expire.', version: '1.0.0', downloads: '2K+', accent: '#8371f4', initials: 'UI', apkUrl: 'https://github.com/iamrahul25/useit/blob/master/builds/useit-v1.0.0-release.apk' },
+  { name: 'Habit-app', description: 'Build a rhythm that sticks, one day at a time.', version: '1.0.0', downloads: '10K+', accent: '#ff736e', initials: 'HA', apkUrl: 'https://github.com/iamrahul25/habit-app/blob/master/build-apk/app-release.apk' },
+]
+const websites = [
+  { name: 'Taskflow', description: 'A simple task management web app to stay productive.', tone: 'blue' },
+  { name: 'ImageKit Pro', description: 'Free online tools for image editing and conversion.', tone: 'pink' },
+  { name: 'LinkHub', description: 'A beautiful link in bio page for creators.', tone: 'violet' },
+  { name: 'WeatherNow', description: 'Real-time weather information in a clean UI.', tone: 'sky' },
+  { name: 'QuoteDaily', description: 'Daily motivation for a better you.', tone: 'lilac' },
+  { name: 'DevUtils', description: 'Handy tools for developers.', tone: 'dark' },
 ]
 
-function getProjectUrl(project: Project) {
-  if (project.type !== 'app') return project.url
-  return project.url.replace('github.com/', 'github.com/').replace('/blob/', '/raw/')
+function getApkUrl(url: string) { return url.replace('/blob/', '/raw/') }
+
+function AppCard({ app }: { app: AppProject }) {
+  return <article className="app-card" style={{ '--app-accent': app.accent } as React.CSSProperties}>
+    <div className="app-icon"><span>{app.initials}</span><i>✓</i></div><h3>{app.name}</h3><p>{app.description}</p>
+    <div className="app-meta"><span>v{app.version}</span><span>{app.downloads} downloads</span></div>
+    <a className="download-button" href={getApkUrl(app.apkUrl)} download target="_blank" rel="noreferrer"><Download size={14} /> Download APK</a>
+  </article>
 }
 
-function ProjectCard({ project }: { project: Project }) {
-  const isApp = project.type === 'app'
+function WebsitesGrid() {
+  return <div className="website-grid">{websites.map((site) => <a className="website-card" href="https://github.com/iamrahul25" target="_blank" rel="noreferrer" key={site.name}>
+    <div className={`site-preview ${site.tone}`}><span>{site.name.slice(0, 2).toUpperCase()}</span></div><div className="website-copy"><strong>{site.name}</strong><ExternalLink size={15} /><p>{site.description}</p></div>
+  </a>)}</div>
+}
 
-  return (
-    <article className="project-card" style={{ '--accent': project.accent } as CSSProperties}>
-      <div className="project-mark" aria-hidden="true">{project.initials}</div>
-      <div className="card-copy">
-        <div className="card-meta">
-          <span className="project-type">{isApp ? 'Android app' : 'Website'}</span>
-          <span className="project-index">{String(projects.indexOf(project) + 1).padStart(2, '0')}</span>
-        </div>
-        <h2>{project.name}</h2>
-        <p>{project.description}</p>
-        <a
-          className="project-action"
-          href={getProjectUrl(project)}
-          target={isApp ? undefined : '_blank'}
-          rel={isApp ? undefined : 'noreferrer'}
-          download={isApp ? true : undefined}
-        >
-          {isApp ? <Download size={17} strokeWidth={2.2} /> : <ExternalLink size={17} strokeWidth={2.2} />}
-          <span>{isApp ? 'Download APK' : 'Visit website'}</span>
-        </a>
-      </div>
-    </article>
-  )
+const navItems = [
+  { to: '/', label: 'Home', icon: Home, end: true },
+  { to: '/apps', label: 'Apps', icon: Smartphone },
+  { to: '/websites', label: 'Websites', icon: Globe2 },
+  { to: '/about', label: 'About', icon: UserRound },
+]
+
+function Shell({ children }: { children: React.ReactNode }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  return <main>
+    <aside className="sidebar"><Link className="wordmark" to="/">RK<span>.</span></Link><nav className="side-nav" aria-label="Primary navigation">
+      {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
+    </nav><div className="sidebar-footer"><span><Moon size={15} /> Dark mode</span><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
+    <nav className="mobile-topbar" aria-label="Mobile navigation"><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>{menuOpen && <div className="mobile-menu">{navItems.map(({ to, label }) => <NavLink key={to} to={to} onClick={() => setMenuOpen(false)}>{label}</NavLink>)}</div>}</nav>
+    <div className="dashboard">{children}</div>
+  </main>
+}
+
+function HeroArt() {
+  return <div className="hero-art"><img src={heroImage} alt="Developer building apps at a desk" /></div>
+}
+
+function HomePage() {
+  return <><section className="hero-panel home-hero" aria-labelledby="page-title"><div className="hero-copy"><p className="eyebrow">Home</p><p className="hand-label">Hey, I’m</p><h1 id="page-title">Rahul Kumar</h1><div className="marker-line" /><p className="hero-intro">I build apps, websites<br />and little ideas that<br />make life easier.</p><Link className="hero-button" to="/apps">Explore My Work <ArrowRight size={16} /></Link><p className="hero-quote">“Small tools. Big impact.”</p></div><HeroArt /></section><section className="home-links"><Link to="/apps"><span>// apps</span><strong>Explore mobile apps <ArrowRight size={16} /></strong></Link><Link to="/websites"><span>// websites</span><strong>See web projects <ArrowRight size={16} /></strong></Link><Link to="/about"><span>// about</span><strong>Meet the maker <ArrowRight size={16} /></strong></Link></section></>
+}
+
+function AppsPage() {
+  return <section className="standalone-panel apps-page-panel apps-panel" aria-labelledby="apps-title"><div className="page-heading dark-heading"><div><p className="eyebrow">// apps</p><h1 id="apps-title">Mobile Apps</h1><p>Simple. Useful. Made with <b>♥</b><br />Download and try my Android apps.</p></div><span className="panel-doodle">Tools in your pocket<br /><ArrowDown size={18} /></span></div><div className="app-grid">{apps.map((app) => <AppCard key={app.name} app={app} />)}<article className="app-card placeholder-card"><div className="app-icon"><span>+</span></div><h3>More soon</h3><p>There are a few more ideas taking shape.</p><div className="app-meta"><span>in progress</span></div></article></div></section>
+}
+
+function WebsitesPage() {
+  return <section className="standalone-panel websites-page-panel websites-panel" aria-labelledby="websites-title"><p className="eyebrow">// websites</p><div className="section-title-row"><div><h1 id="websites-title">Web Projects</h1><div className="green-underline" /></div><p>A collection of websites I’ve built.<br />Click to explore and check them out.</p><span className="live-note">Live &amp; running ↗</span></div><WebsitesGrid /></section>
+}
+
+function AboutPage() {
+  return <section className="standalone-panel about-page-panel about-panel" aria-labelledby="about-title"><p className="eyebrow">// about</p><h1 id="about-title">About Me</h1><div className="green-underline" /><p>I’m Rahul Kumar, a developer who loves turning ideas into real products. I enjoy building mobile apps, web apps and exploring new technologies.</p><ul><li><Code2 size={18} /> Build useful products</li><li><span className="book-icon">▤</span> Always learning</li><li><UserRound size={18} /> Open to collaboration</li><li><Coffee size={18} /> Powered by coffee</li></ul><p className="about-note">Let’s build something<br />cool together! <ArrowRight size={18} /></p><div className="about-callout"><span>Currently thinking about</span><strong>Small tools, useful products,<br />and a better internet together.</strong></div></section>
 }
 
 function App() {
-  const appCount = projects.filter((project) => project.type === 'app').length
-  const websiteCount = projects.filter((project) => project.type === 'website').length
-
-  return (
-    <main>
-      <nav className="topbar" aria-label="Primary navigation">
-        <a className="wordmark" href="/">R<span>.</span></a>
-        <div className="nav-right">
-          <span className="nav-note">Selected work / 2026</span>
-          <a className="github-link" href="https://github.com/iamrahul25" target="_blank" rel="noreferrer" aria-label="Open GitHub profile">
-            <GitBranch size={19} />
-          </a>
-        </div>
-      </nav>
-
-      <section className="hero" aria-labelledby="page-title">
-        <div className="hero-kicker"><Sparkles size={15} /> A small shelf of useful things</div>
-        <h1 id="page-title">Ideas, made<br /><em>usable.</em></h1>
-        <p className="hero-intro">A living collection of websites and apps by Rahul. Browse around, or take something useful with you.</p>
-        <div className="hero-aside" aria-label="Collection summary">
-          <span className="aside-rule" />
-          <span>{projects.length} projects<br />{websiteCount} websites / {appCount} apps</span>
-        </div>
-      </section>
-
-      <section className="collection" aria-labelledby="collection-title">
-        <div className="section-heading">
-          <p className="section-label">The collection</p>
-          <h2 id="collection-title">Things I’ve been<br /><em>working on.</em></h2>
-        </div>
-        <div className="project-grid">
-          {projects.map((project) => <ProjectCard key={project.name} project={project} />)}
-        </div>
-      </section>
-
-      <footer>
-        <span>More in progress.</span>
-        <span className="footer-line" />
-        <span>Made with curiosity.</span>
-      </footer>
-    </main>
-  )
+  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /></Routes></Shell></BrowserRouter>
 }
 
 export default App
