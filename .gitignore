@@ -17,3 +17,6 @@ Thumbs.db
 
 # TypeScript build information
 *.tsbuildinfo
+
+# wrangler
+worker/.wrangler/

@@ -1,7 +1,8 @@
-import { ArrowDown, ArrowRight, Code2, Coffee, Download, ExternalLink, Globe2, Home, Menu, Moon, Smartphone, UserRound, X } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, Home, Lightbulb, Menu, MessageSquareWarning, Moon, Smartphone, UserRound, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
 import heroImage from '../UI-design/img/image.png'
+import { createRequest, listRequests, type PublicRequest } from './lib/api'
 
 type AppProject = { name: string; description: string; version: string; downloads: string; accent: string; initials: string; apkUrl: string }
 const apps: AppProject[] = [
@@ -38,6 +39,8 @@ const navItems = [
   { to: '/apps', label: 'Apps', icon: Smartphone },
   { to: '/websites', label: 'Websites', icon: Globe2 },
   { to: '/about', label: 'About', icon: UserRound },
+  { to: '/problem', label: 'Problem', icon: MessageSquareWarning },
+  { to: '/demand', label: 'Demand', icon: Lightbulb },
 ]
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -71,8 +74,45 @@ function AboutPage() {
   return <section className="standalone-panel about-page-panel about-panel" aria-labelledby="about-title"><p className="eyebrow">// about</p><h1 id="about-title">About Me</h1><div className="green-underline" /><p>I’m Rahul Kumar, a developer who loves turning ideas into real products. I enjoy building mobile apps, web apps and exploring new technologies.</p><ul><li><Code2 size={18} /> Build useful products</li><li><span className="book-icon">▤</span> Always learning</li><li><UserRound size={18} /> Open to collaboration</li><li><Coffee size={18} /> Powered by coffee</li></ul><p className="about-note">Let’s build something<br />cool together! <ArrowRight size={18} /></p><div className="about-callout"><span>Currently thinking about</span><strong>Small tools, useful products,<br />and a better internet together.</strong></div></section>
 }
 
+function RequestPage({ type }: { type: 'problem' | 'demand' }) {
+  const isProblem = type === 'problem'
+  const [submitted, setSubmitted] = useState(false)
+  const [items, setItems] = useState<PublicRequest[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    setLoading(true)
+    listRequests(type).then(setItems).catch((requestError: Error) => setError(requestError.message)).finally(() => setLoading(false))
+  }, [type])
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError('')
+    const form = new FormData(event.currentTarget)
+    try {
+      const result = await createRequest({ kind: type, name: String(form.get('name') || ''), description: String(form.get('problem') || ''), requirements: String(form.get('requirements') || ''), productType: String(form.get('productType') || ''), email: String(form.get('email') || '') })
+      setItems((currentItems) => [result.item, ...currentItems])
+      setSubmitted(true)
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'The request could not be submitted.')
+    }
+  }
+
+  return <section className={`standalone-panel request-page ${isProblem ? 'problem-page' : 'demand-page'}`} aria-labelledby={`${type}-title`}>
+    <div className="request-intro"><p className="eyebrow">// {type}</p><h1 id={`${type}-title`}>{isProblem ? 'Share a Problem' : 'Request an Idea'}</h1><p>{isProblem ? 'Tell me about a problem you are facing. Maybe it can become a small, useful product.' : 'Have an app or website in mind? Share the requirement and let’s shape it into something useful.'}</p></div>
+    {submitted ? <div className="request-success"><CheckCircle2 size={42} /><h2>Thanks for sharing.</h2><p>Your {isProblem ? 'problem' : 'requirement'} is noted. I’ll take a look and think about the next step.</p><button type="button" onClick={() => setSubmitted(false)}>Submit another</button></div> : <form className="request-form" onSubmit={handleSubmit}>
+      {isProblem ? <label>What problem are you facing?<textarea name="problem" placeholder="Describe the problem in your own words..." required /></label> : <><label>What should I build?<input name="name" placeholder="App or website name (optional)" /></label><label>What do you need?<textarea name="requirements" placeholder="Describe the features or requirements..." required /></label><label>Product type<select name="productType" defaultValue="app"><option value="app">Mobile app</option><option value="website">Website</option><option value="both">App and website</option></select></label></>}
+      <label>Your email <span className="optional">optional</span><input type="email" name="email" placeholder="you@example.com" /></label>
+      <button className="request-submit" type="submit">{isProblem ? 'Submit Problem' : 'Send Requirement'} <ArrowRight size={16} /></button>
+    </form>}
+    {error && <p className="request-error" role="alert">{error}</p>}
+    <div className="public-requests"><div className="public-requests-heading"><p className="eyebrow">// community</p><span>{loading ? 'Loading...' : `${items.length} shared`}</span></div>{!loading && items.length === 0 && <p className="empty-requests">Nothing shared yet. You could be the first.</p>}{items.map((item) => <article className="public-request" key={item.id}><time>{new Date(item.createdAt).toLocaleDateString()}</time><strong>{isProblem ? 'Problem shared' : item.name || 'New product idea'}</strong><p>{isProblem ? item.description : item.requirements}</p>{!isProblem && item.productType && <span>{item.productType}</span>}</article>)}</div>
+  </section>
+}
+
 function App() {
-  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /></Routes></Shell></BrowserRouter>
+  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/problem" element={<RequestPage type="problem" />} /><Route path="/demand" element={<RequestPage type="demand" />} /></Routes></Shell></BrowserRouter>
 }
 
 export default App

@@ -1,0 +1,13 @@
+name = "rahuls-digital-shelf-api"
+main = "src/index.ts"
+compatibility_date = "2026-09-13"
+
+# D1 database binding — run `wrangler d1 create rahuls_digital_shelf` once
+# and replace REPLACE_WITH_DATABASE_ID below with the generated database_id.
+[[d1_databases]]
+binding = "DB"
+database_name = "rahuls_digital_shelf"
+database_id = "eab597eb-45d9-4c07-85d1-8ca5cfb7080d"
+
+[observability]
+enabled = true

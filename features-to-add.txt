@@ -1,0 +1,12 @@
+Features to add: 
+----------------
+- Add unit test (Actual) -> To test DB is working -> DB connection test => Can be done in code directly -> But can be added as unit test as well. 
+
+
+
+
+
+
+
+Features added: 
+---------------
