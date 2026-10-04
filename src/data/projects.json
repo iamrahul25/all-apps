@@ -1,0 +1,42 @@
+{
+  "apps": [
+    {
+      "name": "Use-it",
+      "description": "Use everyday things before they expire.",
+      "version": "1.0.0",
+      "downloads": "2K+",
+      "size": "127 MB",
+      "accent": "#8371f4",
+      "initials": "UI",
+      "apkUrl": "https://github.com/iamrahul25/useit/blob/master/builds/useit-v1.0.0-release-1.apk"
+    },
+    {
+      "name": "Habit-app",
+      "description": "Build a rhythm that sticks, one day at a time.",
+      "version": "1.0.0",
+      "downloads": "10K+",
+      "size": "236 MB",
+      "accent": "#ff736e",
+      "initials": "HA",
+      "apkUrl": "https://github.com/iamrahul25/habit-app/blob/master/build-apk/app-release.apk"
+    },
+    {
+      "name": "Connect The Dots",
+      "description": "A relaxing neon puzzle game. Link matching dots, never cross paths and fill every cell across 100 levels and daily puzzles.",
+      "version": "1.0.0",
+      "size": "148 MB",
+      "accent": "#3b9bff",
+      "initials": "CD",
+      "icon": "connect-the-dots.webp",
+      "apkUrl": "https://github.com/iamrahul25/connect-the-dots/blob/master/release/app-release.apk"
+    }
+  ],
+  "websites": [
+    { "name": "Taskflow", "description": "A simple task management web app to stay productive.", "tone": "blue" },
+    { "name": "ImageKit Pro", "description": "Free online tools for image editing and conversion.", "tone": "pink" },
+    { "name": "LinkHub", "description": "A beautiful link in bio page for creators.", "tone": "violet" },
+    { "name": "WeatherNow", "description": "Real-time weather information in a clean UI.", "tone": "sky" },
+    { "name": "QuoteDaily", "description": "Daily motivation for a better you.", "tone": "lilac" },
+    { "name": "DevUtils", "description": "Handy tools for developers.", "tone": "dark" }
+  ]
+}

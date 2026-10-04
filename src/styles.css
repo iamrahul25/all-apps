@@ -59,10 +59,18 @@ h1 { margin-top: 1px; font-family: 'Caveat', cursive; font-size: clamp(46px, 5.2
 .app-card { display: flex; min-height: 245px; flex-direction: column; padding: 14px; border: 1px solid #2a333d; border-radius: 8px; background: #1c232b; }
 .app-icon { position: relative; display: grid; place-items: center; width: 45px; height: 45px; border-radius: 10px; background: var(--app-accent, #4ed5be); color: #fff; font-size: 16px; font-weight: 700; box-shadow: inset 0 0 0 2px rgba(255,255,255,.12); }
 .app-icon i { position: absolute; right: -3px; bottom: -3px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #f6f7f0; color: var(--app-accent, #4ed5be); font-size: 10px; font-style: normal; }
+.app-icon.has-image { background: transparent; box-shadow: none; }
+.app-icon img { display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
 .app-card h3 { margin-top: 15px; font-size: 14px; }
 .app-card p { min-height: 44px; margin-top: 8px; color: #cdd0cf; font-size: 10px; line-height: 1.4; }
-.app-meta { display: flex; gap: 5px; margin-top: auto; color: #d2d5d0; font-family: 'DM Mono', monospace; font-size: 8px; }
+.app-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; color: #d2d5d0; font-family: 'DM Mono', monospace; font-size: 8px; }
 .app-meta span { padding: 4px 5px; border-radius: 4px; background: #29343e; }
+.app-card .app-updated { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 5px; min-height: 16px; margin: 10px 0 0; color: #aeb5b8; font-family: 'DM Mono', monospace; font-size: 9px; line-height: 1.4; transition: opacity .3s; }
+.app-updated time { color: #e4e7e2; }
+.app-updated .time-ago { white-space: nowrap; }
+.app-updated.is-loading { opacity: .55; }
+.app-updated a { display: inline-flex; align-items: center; gap: 5px; color: inherit; text-underline-offset: 2px; }
+.app-updated a:hover { color: #fff; }
 .download-button { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; padding: 8px 4px; border-radius: 5px; background: var(--app-accent, #5ed9c1); color: #101719; font-size: 10px; font-weight: 500; text-decoration: none; }
 .download-button:hover { filter: brightness(1.15); }
 .placeholder-card { border-style: dashed; opacity: .65; }
@@ -115,6 +123,11 @@ h1 { margin-top: 1px; font-family: 'Caveat', cursive; font-size: clamp(46px, 5.2
 .apps-page-panel .page-heading h1, .websites-page-panel h1, .about-page-panel h1 { margin: 20px 0 10px; font-family: 'Caveat', cursive; font-size: clamp(58px, 8vw, 112px); line-height: .78; font-weight: 600; }
 .apps-page-panel .app-grid { grid-template-columns: repeat(3, 1fr); max-width: 920px; margin: 0 auto; }
 .apps-page-panel .app-card { min-height: 300px; padding: 20px; }
+@media (min-width: 761px) {
+	.apps-page-panel .placeholder-card:nth-child(3n + 1) { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 16px; min-height: 0; padding: 16px 20px; }
+	.apps-page-panel .placeholder-card:nth-child(3n + 1) h3, .apps-page-panel .placeholder-card:nth-child(3n + 1) p { min-height: 0; margin: 0; }
+	.apps-page-panel .placeholder-card:nth-child(3n + 1) .app-meta { margin-left: auto; margin-top: 0; }
+}
 .websites-page-panel { padding: 52px 44px; }
 .websites-page-panel .section-title-row { margin-top: 30px; }
 .websites-page-panel .website-grid { grid-template-columns: repeat(3, 1fr); max-width: 1050px; margin: 50px auto 0; gap: 18px; }
@@ -179,6 +192,7 @@ h1 { margin-top: 1px; font-family: 'Caveat', cursive; font-size: clamp(46px, 5.2
 	.app-card h3 { font-size: 17px; }
 	.app-card p { min-height: 0; margin-bottom: 16px; font-size: 13px; }
 	.app-meta { font-size: 10px; }
+	.app-card .app-updated { font-size: 11px; }
 	.download-button { min-height: 44px; margin-top: 14px; font-size: 13px; }
 	.section-title-row > p { font-size: 13px; }
 	.website-copy { padding: 14px; }

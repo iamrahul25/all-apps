@@ -1,31 +1,53 @@
-import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, Home, Lightbulb, Menu, MessageSquareWarning, Moon, Smartphone, UserRound, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, History, Home, Lightbulb, Menu, MessageSquareWarning, Moon, Smartphone, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import heroImage from './assets/hero.webp'
 import heroImageSmall from './assets/hero-768.webp'
 import { createRequest, listRequests, type PublicRequest } from './lib/api'
+import projects from './data/projects.json'
+import { useFileLastUpdated } from './lib/github'
 
-type AppProject = { name: string; description: string; version: string; downloads: string; accent: string; initials: string; apkUrl: string }
-const apps: AppProject[] = [
-  { name: 'Use-it', description: 'Use everyday things before they expire.', version: '1.0.0', downloads: '2K+', accent: '#8371f4', initials: 'UI', apkUrl: 'https://github.com/iamrahul25/useit/blob/master/builds/useit-v1.0.0-release.apk' },
-  { name: 'Habit-app', description: 'Build a rhythm that sticks, one day at a time.', version: '1.0.0', downloads: '10K+', accent: '#ff736e', initials: 'HA', apkUrl: 'https://github.com/iamrahul25/habit-app/blob/master/build-apk/app-release.apk' },
-]
-const websites = [
-  { name: 'Taskflow', description: 'A simple task management web app to stay productive.', tone: 'blue' },
-  { name: 'ImageKit Pro', description: 'Free online tools for image editing and conversion.', tone: 'pink' },
-  { name: 'LinkHub', description: 'A beautiful link in bio page for creators.', tone: 'violet' },
-  { name: 'WeatherNow', description: 'Real-time weather information in a clean UI.', tone: 'sky' },
-  { name: 'QuoteDaily', description: 'Daily motivation for a better you.', tone: 'lilac' },
-  { name: 'DevUtils', description: 'Handy tools for developers.', tone: 'dark' },
-]
+type AppProject = { name: string; description: string; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; apkUrl: string }
+type WebsiteProject = { name: string; description: string; tone: string }
+const apps: AppProject[] = projects.apps
+const websites: WebsiteProject[] = projects.websites
+const appIcons = import.meta.glob<string>('./assets/app-icons/*', { eager: true, query: '?url', import: 'default' })
 
+// GitHub "blob" links open a preview page; "raw" redirects to the actual file, which browsers download.
 function getApkUrl(url: string) { return url.replace('/blob/', '/raw/') }
 
+const shortMonth = new Intl.DateTimeFormat('en-US', { month: 'short' })
+const formatUpdatedDate = (date: Date) => `${date.getDate()} ${shortMonth.format(date)} ${date.getFullYear()}`
+
+const relativeTime = new Intl.RelativeTimeFormat('en', { numeric: 'always' })
+const relativeUnits: [Intl.RelativeTimeFormatUnit, number][] = [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]]
+function formatTimeAgo(date: Date, now: number) {
+  const seconds = Math.round((now - date.getTime()) / 1000)
+  for (const [unit, unitSeconds] of relativeUnits) if (seconds >= unitSeconds) return relativeTime.format(-Math.floor(seconds / unitSeconds), unit)
+  return 'just now'
+}
+
+function useNow(intervalMs: number) {
+  const [now, setNow] = useState(Date.now)
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), intervalMs); return () => clearInterval(timer) }, [intervalMs])
+  return now
+}
+
+function AppUpdated({ apkUrl }: { apkUrl: string }) {
+  const updated = useFileLastUpdated(apkUrl)
+  const now = useNow(60_000)
+  if (updated.status === 'ready') return <p className="app-updated"><History size={12} /> Updated <time dateTime={updated.date.toISOString()} title={updated.date.toLocaleString()}>{formatUpdatedDate(updated.date)}</time> <span className="time-ago">({formatTimeAgo(updated.date, now)})</span></p>
+  if (updated.status === 'error') return <p className="app-updated"><a href={apkUrl} target="_blank" rel="noreferrer">View release on GitHub <ExternalLink size={11} /></a></p>
+  return <p className="app-updated is-loading"><History size={12} /> Checking GitHub…</p>
+}
+
 function AppCard({ app }: { app: AppProject }) {
+  const iconUrl = app.icon ? appIcons[`./assets/app-icons/${app.icon}`] : undefined
   return <article className="app-card" style={{ '--app-accent': app.accent } as React.CSSProperties}>
-    <div className="app-icon"><span>{app.initials}</span><i>✓</i></div><h3>{app.name}</h3><p>{app.description}</p>
-    <div className="app-meta"><span>v{app.version}</span><span>{app.downloads} downloads</span></div>
-    <a className="download-button" href={getApkUrl(app.apkUrl)} download target="_blank" rel="noreferrer"><Download size={14} /> Download APK</a>
+    <div className={`app-icon${iconUrl ? ' has-image' : ''}`}>{iconUrl ? <img src={iconUrl} alt="" width={45} height={45} loading="lazy" /> : <span>{app.initials}</span>}<i>✓</i></div><h3>{app.name}</h3><p>{app.description}</p>
+    <div className="app-meta"><span>v{app.version}</span><span>{app.downloads ? `${app.downloads} downloads` : 'New'}</span>{app.size && <span>{app.size}</span>}</div>
+    <AppUpdated apkUrl={app.apkUrl} />
+    <a className="download-button" href={getApkUrl(app.apkUrl)} download rel="noreferrer" aria-label={`Download ${app.name} APK${app.size ? ` (${app.size})` : ''}`}><Download size={14} /> Download APK</a>
   </article>
 }
 
