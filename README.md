@@ -2,11 +2,22 @@
 
 React/Vite frontend with a Cloudflare Worker API and **Cloudflare D1** (SQLite) storage for public problem and product-demand submissions.
 
+## Live
+
+| Part | Host | URL |
+|------|------|-----|
+| Frontend | Vercel (project `all-apps`) | https://all-apps-murex.vercel.app |
+| Backend API | Cloudflare Workers (`rahuls-digital-shelf-api`) | https://rahuls-digital-shelf-api.iamrahul25.workers.dev/api |
+| Database | Cloudflare D1 (`rahuls_digital_shelf`) | Bound to the Worker as `DB` |
+
+Vercel serves the static React app. The browser calls the Worker API, which reads and writes D1.
+
 ## Prerequisites
 
 - Node.js 20+
 - A Cloudflare account
 - Wrangler authenticated (`npx wrangler login`)
+- A Vercel account and the Vercel CLI authenticated (`npx vercel login`)
 
 > **No MongoDB required.** The project previously used the MongoDB Atlas Data API, which was shut down in September 2025. The backend now uses Cloudflare D1 — a managed SQLite database natively supported by Workers with zero extra configuration.
 
@@ -32,7 +43,7 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-The `.env` file only contains two variables — no database secrets are needed since D1 is wired via `wrangler.toml`.
+The `.env` file contains `VITE_API_URL`, `FRONTEND_ORIGIN` and a local `ADMIN_PASSWORD` — no database secrets are needed since D1 is wired via `wrangler.toml`. `npm run dev:backend` passes `--env-file ../.env` to Wrangler (the path is relative to `worker/wrangler.toml`, not the project root), so `FRONTEND_ORIGIN` and `ADMIN_PASSWORD` apply to the local Worker.
 
 ### 3. Log in to Cloudflare
 
@@ -99,8 +110,31 @@ Open `http://localhost:5173`. The frontend sends requests to `VITE_API_URL` (def
 | `POST` | `/api/problems` | Submit a problem — requires `description`, optional `name` and `email` |
 | `GET` | `/api/demands` | Returns the latest 50 public demands |
 | `POST` | `/api/demands` | Submit a demand — requires `requirements`, optional `name`, `productType`, and `email` |
+| `POST` | `/api/admin/login` | Body `{ "password": "..." }`. Returns `{ token, expiresAt }`, valid for 7 days |
+| `DELETE` | `/api/problems/:id` | Admin only — delete a problem |
+| `DELETE` | `/api/demands/:id` | Admin only — delete a demand |
 
-Email addresses are stored for follow-up but are **never** returned by the public `GET` endpoints.
+Email addresses are stored for follow-up but are **never** returned by the public `GET` endpoints. They are included only when the request carries a valid admin token (`Authorization: Bearer <token>`).
+
+---
+
+## Admin Panel
+
+Open `/admin` (it is not linked in the navigation) and log in with the admin password. Once logged in:
+
+- An **Admin** label appears in the sidebar (and in the mobile menu), linking back to `/admin`, where you can log out.
+- The Problem and Demand pages show each submitter's email and a **Delete** button on every entry.
+- The login lasts 7 days on that browser, then asks for the password again.
+
+The password is checked by the Worker, never by the frontend. It is stored as the Worker secret `ADMIN_PASSWORD`, and login tokens are signed with it, so **changing the password logs out every admin session**. Failed logins are delayed by one second to slow down guessing; use a long password.
+
+Set or change the production password:
+
+```bash
+npx wrangler secret put ADMIN_PASSWORD --config worker/wrangler.toml
+```
+
+If `ADMIN_PASSWORD` is not set, `/admin` shows *"Admin login is not configured."* and deleting is impossible. For local development, set `ADMIN_PASSWORD` in `.env` and restart `npm run dev:backend`.
 
 ---
 
@@ -115,30 +149,80 @@ npm run build:worker
 
 ## Deploy
 
-### Deploy the Worker
+The frontend is hosted on **Vercel** and the backend on **Cloudflare Workers**. Both are already set up, so day-to-day updates are a single command each:
+
+| What changed | Command |
+|--------------|---------|
+| Frontend (`src/`) | `npx vercel deploy --prod` |
+| Backend (`worker/`) | `npm run deploy:backend` |
+
+### Backend: Cloudflare Worker
 
 ```bash
 npm run deploy:backend
 ```
 
-This runs `tsc` on the Worker and then deploys via Wrangler. D1 is automatically available — no secrets to set for the database.
+This runs `tsc` on the Worker and then deploys via Wrangler to https://rahuls-digital-shelf-api.iamrahul25.workers.dev. D1 is automatically available — no secrets to set for the database. The Worker runs `CREATE TABLE IF NOT EXISTS` on each request, so tables are created on first use.
 
-Optionally, set the `FRONTEND_ORIGIN` secret to restrict CORS to your deployed frontend URL:
+The Cloudflare account uses the `iamrahul25.workers.dev` subdomain. On a new account, register a `workers.dev` subdomain once in the Cloudflare dashboard (**Workers & Pages**) before the first deploy, otherwise Wrangler stops with *"You need to register a workers.dev subdomain"*. A brand-new subdomain can take a few minutes to get its SSL certificate.
 
-```bash
-npx wrangler secret put FRONTEND_ORIGIN
-# enter: https://your-frontend.pages.dev
-```
-
-### Deploy the Frontend
-
-Set `VITE_API_URL` to your deployed Worker URL (e.g. `https://rahuls-digital-shelf-api.<account>.workers.dev/api`) and build:
+The `FRONTEND_ORIGIN` secret restricts CORS to the Vercel site. It is currently set to `https://all-apps-murex.vercel.app`. Update it if the frontend domain changes (for example, after adding a custom domain):
 
 ```bash
-npm run build
+npx wrangler secret put FRONTEND_ORIGIN --config worker/wrangler.toml
+# enter: https://all-apps-murex.vercel.app
 ```
 
-Then deploy the `dist/` folder to Cloudflare Pages (or any static host).
+> Because CORS only allows the production URL, forms will not work on Vercel preview deployment URLs.
+
+### Frontend: Vercel
+
+The Vercel project is `all-apps`. Vercel detects Vite automatically, runs `npm run build` and serves `dist/`.
+
+`VITE_API_URL` is stored as a Vercel environment variable (Production and Preview) and is baked into the bundle at build time:
+
+```
+VITE_API_URL=https://rahuls-digital-shelf-api.iamrahul25.workers.dev/api
+```
+
+To change it, update the variable and redeploy:
+
+```bash
+npx vercel env rm VITE_API_URL production
+npx vercel env add VITE_API_URL production
+npx vercel deploy --prod
+```
+
+Two files support the Vercel deployment:
+
+- [`vercel.json`](vercel.json) rewrites every path to `index.html`, so refreshing client-side routes such as `/apps` or `/about` does not return a 404.
+- [`.vercelignore`](.vercelignore) keeps `node_modules`, `dist`, `UI-design` and local `.env` files out of the upload, so the localhost `VITE_API_URL` from `.env` never reaches the production build.
+
+To deploy automatically on every push, connect the GitHub repo `iamrahul25/all-apps` in the Vercel dashboard under **Project → Settings → Git**.
+
+### First-time setup (reference)
+
+These are the commands used to put the project live for the first time:
+
+```bash
+# Logins
+npx wrangler login
+npx vercel login
+
+# Backend (after registering the workers.dev subdomain)
+npm run deploy:backend
+npx wrangler secret put FRONTEND_ORIGIN --config worker/wrangler.toml   # https://all-apps-murex.vercel.app
+npx wrangler secret put ADMIN_PASSWORD --config worker/wrangler.toml    # your admin password
+
+# Frontend
+npx vercel deploy --prod --yes                 # creates the "all-apps" project
+npx vercel env add VITE_API_URL production     # https://rahuls-digital-shelf-api.iamrahul25.workers.dev/api
+npx vercel env add VITE_API_URL preview
+npx vercel deploy --prod --yes                 # rebuild with the API URL
+
+# Verify
+curl https://rahuls-digital-shelf-api.iamrahul25.workers.dev/api/problems
+```
 
 ---
 
@@ -152,5 +236,7 @@ Then deploy the `dist/` folder to Cloudflare Pages (or any static host).
 │   ├── schema.sql         # D1 table definitions (problems, demands)
 │   └── wrangler.toml      # Worker config with D1 binding
 ├── .env.example           # Environment variable template
+├── vercel.json            # Vercel SPA rewrite config
+├── .vercelignore          # Files excluded from Vercel uploads
 └── package.json
 ```

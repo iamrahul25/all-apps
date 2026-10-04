@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:frontend": "vite",
-    "dev:backend": "wrangler dev --config worker/wrangler.toml",
+    "dev:backend": "cd worker && wrangler dev --env-file ../.env",
     "build": "tsc -b && vite build",
     "build:worker": "tsc -p worker/tsconfig.json",
     "deploy:backend": "npm run build:worker && wrangler deploy --config worker/wrangler.toml",

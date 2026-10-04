@@ -1,9 +1,10 @@
-import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, History, Home, Lightbulb, Menu, MessageSquareWarning, Moon, Smartphone, UserRound, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, History, Home, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, Moon, ShieldCheck, Smartphone, Trash2, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import heroImage from './assets/hero.webp'
 import heroImageSmall from './assets/hero-768.webp'
-import { createRequest, listRequests, type PublicRequest } from './lib/api'
+import { clearAdminSession, useAdminSession } from './lib/admin'
+import { adminLogin, createRequest, deleteRequest, listRequests, type PublicRequest } from './lib/api'
 import projects from './data/projects.json'
 import { useFileLastUpdated } from './lib/github'
 
@@ -70,6 +71,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const mobileNavRef = useRef<HTMLElement>(null)
   const { pathname } = useLocation()
+  const isAdmin = useAdminSession() !== null
 
   useEffect(() => { setMenuOpen(false); window.scrollTo(0, 0) }, [pathname])
 
@@ -85,8 +87,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   return <main>
     <aside className="sidebar"><Link className="wordmark" to="/">RK<span>.</span></Link><nav className="side-nav" aria-label="Primary navigation">
       {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
-    </nav><div className="sidebar-footer"><span><Moon size={15} /> Dark mode</span><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
-    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}</div></nav>
+    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><span><Moon size={15} /> Dark mode</span><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
+    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}</div></nav>
     <div className="dashboard" key={pathname}>{children}</div>
   </main>
 }
@@ -125,11 +127,27 @@ function RequestPage({ type }: { type: 'problem' | 'demand' }) {
   const [items, setItems] = useState<PublicRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const isAdmin = useAdminSession() !== null
 
   useEffect(() => {
     setLoading(true)
     listRequests(type).then(setItems).catch((requestError: Error) => setError(requestError.message)).finally(() => setLoading(false))
-  }, [type])
+  }, [type, isAdmin])
+
+  async function handleDelete(item: PublicRequest) {
+    if (!window.confirm(`Delete this ${type}? This cannot be undone.`)) return
+    setError('')
+    setDeletingId(item.id)
+    try {
+      await deleteRequest(type, item.id)
+      setItems((currentItems) => currentItems.filter((currentItem) => currentItem.id !== item.id))
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'The request could not be deleted.')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -152,12 +170,40 @@ function RequestPage({ type }: { type: 'problem' | 'demand' }) {
       <button className="request-submit" type="submit">{isProblem ? 'Submit Problem' : 'Send Requirement'} <ArrowRight size={16} /></button>
     </form>}
     {error && <p className="request-error" role="alert">{error}</p>}
-    <div className="public-requests"><div className="public-requests-heading"><p className="eyebrow">// community</p><span>{loading ? 'Loading...' : `${items.length} shared`}</span></div>{!loading && items.length === 0 && <p className="empty-requests">Nothing shared yet. You could be the first.</p>}{items.map((item) => <article className="public-request" key={item.id}><time>{new Date(item.createdAt).toLocaleDateString()}</time><strong>{isProblem ? 'Problem shared' : item.name || 'New product idea'}</strong><p>{isProblem ? item.description : item.requirements}</p>{!isProblem && item.productType && <span>{item.productType}</span>}</article>)}</div>
+    <div className="public-requests"><div className="public-requests-heading"><p className="eyebrow">// community</p><span>{loading ? 'Loading...' : `${items.length} shared`}</span></div>{!loading && items.length === 0 && <p className="empty-requests">Nothing shared yet. You could be the first.</p>}{items.map((item) => <article className="public-request" key={item.id}><time>{new Date(item.createdAt).toLocaleDateString()}</time><strong>{isProblem ? 'Problem shared' : item.name || 'New product idea'}</strong><p>{isProblem ? item.description : item.requirements}</p>{!isProblem && item.productType && <span>{item.productType}</span>}{isAdmin && <div className="admin-item-tools">{item.email ? <a href={`mailto:${item.email}`}><Mail size={12} /> {item.email}</a> : <em>No email</em>}<button type="button" onClick={() => handleDelete(item)} disabled={deletingId === item.id} aria-label={`Delete this ${type}`}><Trash2 size={13} /> {deletingId === item.id ? 'Deleting…' : 'Delete'}</button></div>}</article>)}</div>
+  </section>
+}
+
+function AdminPage() {
+  const session = useAdminSession()
+  const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setError('')
+    setSubmitting(true)
+    try {
+      await adminLogin(String(new FormData(event.currentTarget).get('password') || ''))
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : 'Login failed.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return <section className="standalone-panel request-page admin-page" aria-labelledby="admin-title">
+    <div className="request-intro"><p className="eyebrow">// admin</p><h1 id="admin-title">Admin</h1><p>{session ? 'You are logged in. Delete buttons and submitter emails now appear on the Problem and Demand pages.' : 'Log in to manage problems and demands.'}</p></div>
+    {session ? <div className="request-success admin-panel"><ShieldCheck size={42} /><h2>Admin user</h2><p>Session active until {new Date(session.expiresAt).toLocaleString()}.</p><div className="admin-links"><Link to="/problem">Manage problems <ArrowRight size={14} /></Link><Link to="/demand">Manage demands <ArrowRight size={14} /></Link></div><button type="button" onClick={clearAdminSession}><LogOut size={15} /> Log out</button></div> : <form className="request-form" onSubmit={handleLogin}>
+      <label>Admin password<input type="password" name="password" autoComplete="current-password" required autoFocus /></label>
+      <button className="request-submit" type="submit" disabled={submitting}>{submitting ? 'Checking…' : 'Log in'} <ArrowRight size={16} /></button>
+    </form>}
+    {error && <p className="request-error" role="alert">{error}</p>}
   </section>
 }
 
 function App() {
-  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/problem" element={<RequestPage type="problem" />} /><Route path="/demand" element={<RequestPage type="demand" />} /></Routes></Shell></BrowserRouter>
+  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/problem" element={<RequestPage type="problem" />} /><Route path="/demand" element={<RequestPage type="demand" />} /><Route path="/admin" element={<AdminPage />} /></Routes></Shell></BrowserRouter>
 }
 
 export default App
