@@ -1,7 +1,8 @@
 import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, Home, Lightbulb, Menu, MessageSquareWarning, Moon, Smartphone, UserRound, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom'
-import heroImage from '../UI-design/img/image.png'
+import { useEffect, useRef, useState } from 'react'
+import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import heroImage from './assets/hero.webp'
+import heroImageSmall from './assets/hero-768.webp'
 import { createRequest, listRequests, type PublicRequest } from './lib/api'
 
 type AppProject = { name: string; description: string; version: string; downloads: string; accent: string; initials: string; apkUrl: string }
@@ -45,21 +46,43 @@ const navItems = [
 
 function Shell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const mobileNavRef = useRef<HTMLElement>(null)
+  const { pathname } = useLocation()
+
+  useEffect(() => { setMenuOpen(false); window.scrollTo(0, 0) }, [pathname])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const closeOnOutsideTap = (event: PointerEvent) => { if (!mobileNavRef.current?.contains(event.target as Node)) setMenuOpen(false) }
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setMenuOpen(false) }
+    document.addEventListener('pointerdown', closeOnOutsideTap)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => { document.removeEventListener('pointerdown', closeOnOutsideTap); document.removeEventListener('keydown', closeOnEscape) }
+  }, [menuOpen])
+
   return <main>
     <aside className="sidebar"><Link className="wordmark" to="/">RK<span>.</span></Link><nav className="side-nav" aria-label="Primary navigation">
       {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
     </nav><div className="sidebar-footer"><span><Moon size={15} /> Dark mode</span><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
-    <nav className="mobile-topbar" aria-label="Mobile navigation"><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button>{menuOpen && <div className="mobile-menu">{navItems.map(({ to, label }) => <NavLink key={to} to={to} onClick={() => setMenuOpen(false)}>{label}</NavLink>)}</div>}</nav>
-    <div className="dashboard">{children}</div>
+    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}</div></nav>
+    <div className="dashboard" key={pathname}>{children}</div>
   </main>
 }
 
 function HeroArt() {
-  return <div className="hero-art"><img src={heroImage} alt="Developer building apps at a desk" /></div>
+  return <div className="hero-art"><img src={heroImage} srcSet={`${heroImageSmall} 768w, ${heroImage} 1536w`} sizes="(max-width: 760px) 100vw, 60vw" width={1536} height={1024} fetchPriority="high" alt="Developer building apps at a desk" /></div>
 }
 
+const homeLinks = [
+  { to: '/apps', label: 'apps', title: 'Explore my apps' },
+  { to: '/websites', label: 'websites', title: 'See web projects' },
+  { to: '/about', label: 'about', title: 'Meet the maker' },
+  { to: '/problem', label: 'problem', title: 'Share a problem' },
+  { to: '/demand', label: 'demand', title: 'Request an idea' },
+]
+
 function HomePage() {
-  return <><section className="hero-panel home-hero" aria-labelledby="page-title"><div className="hero-copy"><p className="eyebrow">Home</p><p className="hand-label">Hey, I’m</p><h1 id="page-title">Rahul Kumar</h1><div className="marker-line" /><p className="hero-intro">I build apps, websites<br />and little ideas that<br />make life easier.</p><Link className="hero-button" to="/apps">Explore My Work <ArrowRight size={16} /></Link><p className="hero-quote">“Small tools. Big impact.”</p></div><HeroArt /></section><section className="home-links"><Link to="/apps"><span>// apps</span><strong>Explore mobile apps <ArrowRight size={16} /></strong></Link><Link to="/websites"><span>// websites</span><strong>See web projects <ArrowRight size={16} /></strong></Link><Link to="/about"><span>// about</span><strong>Meet the maker <ArrowRight size={16} /></strong></Link></section></>
+  return <><section className="hero-panel home-hero" aria-labelledby="page-title"><div className="hero-copy"><p className="eyebrow">Home</p><p className="hand-label">Hey, I’m</p><h1 id="page-title">Rahul Kumar</h1><div className="marker-line" /><p className="hero-intro">I build apps, websites <br />and little ideas that <br />make life easier.</p><Link className="hero-button" to="/apps">Explore My Work <ArrowRight size={16} /></Link><p className="hero-quote">“Small tools. Big impact.”</p></div><HeroArt /></section><section className="home-links">{homeLinks.map(({ to, label, title }) => <Link key={to} to={to}><span>// {label}</span><strong>{title} <ArrowRight size={16} /></strong></Link>)}</section></>
 }
 
 function AppsPage() {
