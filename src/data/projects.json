@@ -3,6 +3,8 @@
     {
       "name": "Use-it",
       "description": "Use everyday things before they expire.",
+      "status": "Stable",
+      "tags": ["Productivity", "Reminders", "Daily Use"],
       "version": "1.0.0",
       "downloads": "2K+",
       "size": "127 MB",
@@ -14,6 +16,8 @@
     {
       "name": "Habit-app",
       "description": "Build a rhythm that sticks, one day at a time.",
+      "status": "Stable",
+      "tags": ["Habits", "Tracking", "Motivation"],
       "version": "1.0.0",
       "downloads": "10K+",
       "size": "236 MB",
@@ -25,6 +29,8 @@
     {
       "name": "Connect The Dots",
       "description": "A relaxing neon puzzle game. Link matching dots, never cross paths and fill every cell across 100 levels and daily puzzles.",
+      "status": "Stable",
+      "tags": ["Puzzle", "Relaxing", "Offline"],
       "version": "1.0.0",
       "size": "148 MB",
       "accent": "#3b9bff",

@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, ChartNoAxesColumnIncreasing, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, GraduationCap, History, Home, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, Moon, RefreshCw, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
+import { ArrowRight, ChartNoAxesColumnIncreasing, CheckCircle2, Code2, Coffee, Database, Download, ExternalLink, Globe2, GraduationCap, History, Home, ImageIcon, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, Moon, Plus, RefreshCw, Settings, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import heroDark from './assets/hero-dark.webp'
@@ -11,11 +11,12 @@ import projects from './data/projects.json'
 import { useFileLastUpdated } from './lib/github'
 import { toggleTheme, useTheme } from './lib/theme'
 
-type AppProject = { name: string; description: string; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; apkUrl: string; repoUrl?: string }
+type AppProject = { name: string; description: string; status?: string; tags?: string[]; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; screenshot?: string; apkUrl: string; repoUrl?: string }
 type WebsiteProject = { name: string; description: string; url: string; repoUrl?: string; image?: string; tags: string[]; tone: string }
 const apps: AppProject[] = projects.apps
 const websites: WebsiteProject[] = projects.websites
 const appIcons = import.meta.glob<string>('./assets/app-icons/*', { eager: true, query: '?url', import: 'default' })
+const appScreenshots = import.meta.glob<string>('./assets/app-screenshots/*', { eager: true, query: '?url', import: 'default' })
 const sitePreviews = import.meta.glob<string>('./assets/site-previews/*', { eager: true, query: '?url', import: 'default' })
 
 // GitHub "blob" links open a preview page; "raw" redirects to the actual file, which browsers download.
@@ -41,9 +42,9 @@ function useNow(intervalMs: number) {
 function AppUpdated({ apkUrl }: { apkUrl: string }) {
   const updated = useFileLastUpdated(apkUrl)
   const now = useNow(60_000)
-  if (updated.status === 'ready') return <p className="app-updated"><History size={12} /> Updated <time dateTime={updated.date.toISOString()} title={updated.date.toLocaleString()}>{formatUpdatedDate(updated.date)}</time> <span className="time-ago">({formatTimeAgo(updated.date, now)})</span></p>
+  if (updated.status === 'ready') return <p className="app-updated"><History size={14} /> Updated <time dateTime={updated.date.toISOString()} title={updated.date.toLocaleString()}>{formatUpdatedDate(updated.date)}</time> <span className="time-ago">({formatTimeAgo(updated.date, now)})</span></p>
   if (updated.status === 'error') return <p className="app-updated"><a href={apkUrl} target="_blank" rel="noreferrer">View release on GitHub <ExternalLink size={11} /></a></p>
-  return <p className="app-updated is-loading"><History size={12} /> Checking GitHub…</p>
+  return <p className="app-updated is-loading"><History size={14} /> Checking GitHub…</p>
 }
 
 // lucide-react no longer ships brand icons, so the GitHub mark is inlined.
@@ -55,14 +56,49 @@ function SourceLink({ name, repoUrl }: { name: string; repoUrl: string }) {
   return <a className="source-link" href={repoUrl} target="_blank" rel="noreferrer" aria-label={`View ${name} source code on GitHub (opens in a new tab)`}><GitHubIcon size={14} /> Source code</a>
 }
 
+function PhoneSkeleton() {
+  return <div className="phone-skeleton"><span className="sk-title" /><span className="sk-sub" /><span className="sk-row" /><span className="sk-row" /><span className="sk-row" /><span className="sk-row" /><span className="sk-fab" /></div>
+}
+
 function AppCard({ app }: { app: AppProject }) {
   const iconUrl = app.icon ? appIcons[`./assets/app-icons/${app.icon}`] : undefined
+  const screenshotUrl = app.screenshot ? appScreenshots[`./assets/app-screenshots/${app.screenshot}`] : undefined
   return <article className="app-card" style={{ '--app-accent': app.accent } as React.CSSProperties}>
-    <div className={`app-icon${iconUrl ? ' has-image' : ''}`}>{iconUrl ? <img src={iconUrl} alt="" width={45} height={45} loading="lazy" /> : <span>{app.initials}</span>}<i>✓</i></div><h3>{app.name}</h3><p>{app.description}</p>
-    <div className="app-meta"><span>v{app.version}</span><span>{app.downloads ? `${app.downloads} downloads` : 'New'}</span>{app.size && <span>{app.size}</span>}</div>
+    <div className="app-card-top">
+      <div className="app-card-info">
+        <div className="app-card-head"><div className={`app-icon${iconUrl ? ' has-image' : ''}`}>{iconUrl ? <img src={iconUrl} alt="" width={56} height={56} loading="lazy" /> : <span>{app.initials}</span>}</div>{app.status && <span className="app-status">{app.status}</span>}</div>
+        <h3>{app.name}</h3><p>{app.description}</p>
+        {app.tags && app.tags.length > 0 && <ul className="app-tags">{app.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}
+      </div>
+      <div className="app-phone">{screenshotUrl ? <img src={screenshotUrl} alt={`${app.name} screenshot`} loading="lazy" /> : <PhoneSkeleton />}</div>
+    </div>
+    <ul className="app-meta"><li><History size={14} /> v{app.version}</li><li>{app.downloads ? <><Download size={14} /> {app.downloads} downloads</> : <span className="app-new">New</span>}</li>{app.size && <li><Database size={14} /> {app.size}</li>}</ul>
     <AppUpdated apkUrl={app.apkUrl} />
-    <a className="download-button" href={getApkUrl(app.apkUrl)} download rel="noreferrer" aria-label={`Download ${app.name} APK${app.size ? ` (${app.size})` : ''}`}><Download size={14} /> Download APK</a>
+    <a className="download-button" href={getApkUrl(app.apkUrl)} download rel="noreferrer" aria-label={`Download ${app.name} APK${app.size ? ` (${app.size})` : ''}`}><Download size={16} /> Download APK</a>
     {app.repoUrl && <SourceLink name={app.name} repoUrl={app.repoUrl} />}
+  </article>
+}
+
+function AndroidIcon() {
+  return <svg className="android-icon" viewBox="0 0 64 72" aria-hidden="true"><path d="M22 9 17 2M42 9l5-7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" /><path d="M10 27a22 22 0 0 1 44 0Z" /><circle cx="23" cy="18" r="2.5" fill="#fff" /><circle cx="41" cy="18" r="2.5" fill="#fff" /><path d="M10 30h44v24a5 5 0 0 1-5 5H15a5 5 0 0 1-5-5Z" /><rect x="1" y="31" width="7" height="22" rx="3.5" /><rect x="56" y="31" width="7" height="22" rx="3.5" /><rect x="20" y="55" width="7" height="15" rx="3.5" /><rect x="37" y="55" width="7" height="15" rx="3.5" /></svg>
+}
+
+function AppsHeroArt() {
+  return <div className="apps-hero-art" aria-hidden="true">
+    <span className="apps-art-blob" />
+    <span className="apps-doodle">Tools in your pocket<svg viewBox="0 0 30 34"><path d="M10 2c-6 9 10 14 5 30M9 26l6 7 5-8" /></svg></span>
+    <span className="apps-art-phone"><AndroidIcon /></span>
+    <span className="apps-art-tile tile-image"><ImageIcon size={26} /></span>
+    <span className="apps-art-tile tile-download"><Download size={26} /></span>
+    <span className="apps-art-tile tile-settings"><Settings size={26} /></span>
+  </div>
+}
+
+function MoreSoonCard() {
+  return <article className="more-soon-card">
+    <span className="more-soon-icon"><Plus size={24} /></span>
+    <div><p className="eyebrow">More soon</p><h3>There are a few more ideas taking shape.</h3><p>Stay tuned for more useful apps!</p></div>
+    <div className="more-soon-deco"><span className="more-soon-chip">in progress</span><svg className="more-soon-plane" viewBox="0 0 150 72" aria-hidden="true"><path className="plane-trail" d="M18 66C50 74 72 50 104 44" /><g transform="translate(88 4)"><path d="M60 2 2 20l22 8Z" fill="#a993ff" /><path d="M60 2 24 28l16 16Z" fill="#7c5cf0" /><path d="m24 28 4 14 6-6Z" fill="#5b3fd0" /></g></svg></div>
   </article>
 }
 
@@ -162,7 +198,11 @@ function HomePage() {
 }
 
 function AppsPage() {
-  return <section className="standalone-panel apps-page-panel apps-panel" aria-labelledby="apps-title"><div className="page-heading dark-heading"><div><p className="eyebrow">// apps</p><h1 id="apps-title">Mobile Apps</h1><p>Simple. Useful. Made with <b>♥</b><br />Download and try my Android apps.</p></div><span className="panel-doodle">Tools in your pocket<br /><ArrowDown size={18} /></span></div><div className="app-grid">{apps.map((app) => <AppCard key={app.name} app={app} />)}<article className="app-card placeholder-card"><div className="app-icon"><span>+</span></div><h3>More soon</h3><p>There are a few more ideas taking shape.</p><div className="app-meta"><span>in progress</span></div></article></div></section>
+  return <section className="standalone-panel apps-panel apps-page" aria-labelledby="apps-title">
+    <header className="apps-hero"><p className="eyebrow">// apps</p><h1 id="apps-title">Mobile <em>Apps</em></h1><p>Simple. Useful. Made with <b>♥</b><br />Download and try my Android apps.</p></header>
+    <AppsHeroArt />
+    <div className="app-grid">{apps.map((app) => <AppCard key={app.name} app={app} />)}<MoreSoonCard /></div>
+  </section>
 }
 
 function WebsitesPage() {

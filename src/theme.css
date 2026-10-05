@@ -94,6 +94,12 @@
 	--apps-heading: #d4f541;
 	--apps-heart: #ff6668;
 	--apps-default-accent: #4ed5be;
+	--apps-title-accent: #8b5cf6;
+	--apps-lavender: #f3f0fe;
+	--apps-lavender-strong: #e6e0fd;
+	--apps-phone-bezel: #1c1c22;
+	--apps-phone-screen: #fff;
+	--apps-status-dot: #2fbf6a;
 }
 
 /* Larger type scale for desktop; mobile breakpoints in styles.css step up to bigger tokens on their own. */
@@ -122,6 +128,11 @@
 	--apps-text: #f4f5ef;
 	--apps-text-soft: #d9d9d4;
 	--apps-text-muted: #aeb5b8;
+	--apps-title-accent: #a993ff;
+	--apps-lavender: #1f1d33;
+	--apps-lavender-strong: #2c2748;
+	--apps-phone-bezel: #07090b;
+	--apps-phone-screen: #12171c;
 
 	--color-primary: var(--apps-heading);
 	--color-primary-hover: #e4ff70;
