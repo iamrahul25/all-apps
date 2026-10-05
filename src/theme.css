@@ -1,0 +1,138 @@
+/*
+  Global design tokens. Change values here to restyle the whole site.
+  :root holds the light theme (and theme-independent tokens); [data-theme='dark'] overrides colors only.
+  The --apps-* palette is always dark: the /apps page looks the same in both themes.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
+
+:root {
+	color-scheme: light;
+
+	/* Typography */
+	--font-sans: 'DM Sans', sans-serif;
+	--font-mono: 'DM Mono', monospace;
+	--font-hand: 'Caveat', cursive;
+
+	--text-3xs: 8px;
+	--text-2xs: 9px;
+	--text-xs: 10px;
+	--text-sm: 11px;
+	--text-md: 12px;
+	--text-base: 13px;
+	--text-lg: 14px;
+	--text-xl: 15px;
+	--text-display: clamp(58px, 8vw, 112px);
+	--text-hero: clamp(46px, 5.2vw, 82px);
+
+	/* Brand colors */
+	--color-primary: #171717;
+	--color-primary-hover: #3d7140;
+	--color-on-primary: #fff;
+	--color-secondary: #4e974e;
+	--color-secondary-soft: #8bcf8b;
+	--color-secondary-tint: rgba(78,151,78,.1);
+	--color-highlight: #ffd23d;
+	--color-accent: #e56b6f;
+	--color-problem: #ff8a80;
+	--color-demand: #f4c542;
+	--color-danger: #b64036;
+
+	/* Surfaces */
+	--color-bg: #e8e8e5;
+	--color-surface: #f8f7f2;
+	--color-surface-raised: #faf9f4;
+	--color-surface-input: #fffef8;
+	--color-surface-hover: #ececf4;
+	--color-sidebar: rgba(248,247,242,.94);
+	--color-form: rgba(248,247,242,.8);
+	--color-list-item: rgba(255,255,255,.52);
+	--color-hero-art: var(--color-surface);
+	--color-problem-bg: #fff9f3;
+	--color-demand-bg: #fffef2;
+	--color-admin-bg: #f6f8f2;
+	--color-success-bg: #f4f8df;
+	--color-tag: #f3e7ae;
+	--color-note: #fff5bd;
+	--color-note-text: #171717;
+
+	/* Text */
+	--color-text: #171717;
+	--color-text-soft: #30302e;
+	--color-text-body: #4f4e49;
+	--color-text-label: #5d5c57;
+	--color-text-muted: #666560;
+	--color-text-placeholder: #9a9890;
+
+	/* Lines */
+	--color-line: rgba(23,23,23,.16);
+	--color-line-strong: rgba(23,23,23,.25);
+
+	/* Shape */
+	--radius-chip: 4px;
+	--radius-button: 5px;
+	--radius-card: 6px;
+	--radius-panel: 7px;
+	--radius-sketch: 6px 17px 8px 13px;
+
+	/* Shadows */
+	--shadow-panel: 0 2px 5px rgba(20,20,20,.04);
+	--shadow-card: 0 2px 2px rgba(0,0,0,.04);
+	--shadow-offset: 7px 8px 0 rgba(23,23,23,.1);
+	--shadow-hero-art: none;
+
+	/* Apps palette (always dark) */
+	--apps-bg: #161b20;
+	--apps-border: #252d35;
+	--apps-card: #1c232b;
+	--apps-card-border: #2a333d;
+	--apps-chip: #29343e;
+	--apps-placeholder: #313d4a;
+	--apps-text: #f4f5ef;
+	--apps-text-soft: #d9d9d4;
+	--apps-text-muted: #aeb5b8;
+	--apps-heading: #d4f541;
+	--apps-heart: #ff6668;
+	--apps-default-accent: #4ed5be;
+}
+
+[data-theme='dark'] {
+	color-scheme: dark;
+
+	--color-primary: var(--apps-heading);
+	--color-primary-hover: #e4ff70;
+	--color-on-primary: #101719;
+	--color-secondary: #6fbf6f;
+	--color-secondary-soft: #5fa35f;
+	--color-secondary-tint: rgba(111,191,111,.12);
+	--color-danger: #ff7a6e;
+
+	--color-bg: #0f1317;
+	--color-surface: var(--apps-bg);
+	--color-surface-raised: var(--apps-card);
+	--color-surface-input: #12171c;
+	--color-surface-hover: var(--apps-chip);
+	--color-sidebar: rgba(22,27,32,.94);
+	--color-form: rgba(28,35,43,.8);
+	--color-list-item: rgba(255,255,255,.04);
+	--color-hero-art: #fff;
+	--color-problem-bg: #1d191b;
+	--color-demand-bg: #1c1c16;
+	--color-admin-bg: #151c18;
+	--color-success-bg: #1b251e;
+	--color-tag: #3a3520;
+
+	--color-text: var(--apps-text);
+	--color-text-soft: var(--apps-text-soft);
+	--color-text-body: #cdd0cf;
+	--color-text-label: #c3c7c1;
+	--color-text-muted: var(--apps-text-muted);
+	--color-text-placeholder: #6f7a80;
+
+	--color-line: var(--apps-card-border);
+	--color-line-strong: #3a4652;
+
+	--shadow-panel: 0 2px 5px rgba(0,0,0,.3);
+	--shadow-card: 0 2px 2px rgba(0,0,0,.25);
+	--shadow-offset: 7px 8px 0 rgba(0,0,0,.35);
+	--shadow-hero-art: 0 6px 18px rgba(0,0,0,.35);
+}

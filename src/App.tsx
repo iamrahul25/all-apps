@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, History, Home, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, Moon, ShieldCheck, Smartphone, Trash2, UserRound, X } from 'lucide-react'
+import { ArrowDown, ArrowRight, CheckCircle2, Code2, Coffee, Download, ExternalLink, Globe2, History, Home, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, Moon, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import heroImage from './assets/hero.webp'
@@ -7,6 +7,7 @@ import { clearAdminSession, useAdminSession } from './lib/admin'
 import { adminLogin, createRequest, deleteRequest, listRequests, type PublicRequest } from './lib/api'
 import projects from './data/projects.json'
 import { useFileLastUpdated } from './lib/github'
+import { toggleTheme, useTheme } from './lib/theme'
 
 type AppProject = { name: string; description: string; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; apkUrl: string }
 type WebsiteProject = { name: string; description: string; url: string; image?: string; tags: string[]; tone: string }
@@ -74,6 +75,12 @@ const navItems = [
   { to: '/demand', label: 'Demand', icon: Lightbulb },
 ]
 
+function ThemeToggle({ iconSize }: { iconSize: number }) {
+  const isDark = useTheme() === 'dark'
+  const Icon = isDark ? Sun : Moon
+  return <button className="theme-toggle" type="button" onClick={toggleTheme} aria-pressed={isDark} aria-label="Dark mode"><Icon size={iconSize} /> {isDark ? 'Light mode' : 'Dark mode'}</button>
+}
+
 function Shell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const mobileNavRef = useRef<HTMLElement>(null)
@@ -94,8 +101,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   return <main>
     <aside className="sidebar"><Link className="wordmark" to="/">RK<span>.</span></Link><nav className="side-nav" aria-label="Primary navigation">
       {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
-    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><span><Moon size={15} /> Dark mode</span><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
-    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}</div></nav>
+    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><ThemeToggle iconSize={15} /><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
+    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}<ThemeToggle iconSize={16} /></div></nav>
     <div className="dashboard" key={pathname}>{children}</div>
   </main>
 }
