@@ -32,11 +32,45 @@
     }
   ],
   "websites": [
-    { "name": "Taskflow", "description": "A simple task management web app to stay productive.", "tone": "blue" },
-    { "name": "ImageKit Pro", "description": "Free online tools for image editing and conversion.", "tone": "pink" },
-    { "name": "LinkHub", "description": "A beautiful link in bio page for creators.", "tone": "violet" },
-    { "name": "WeatherNow", "description": "Real-time weather information in a clean UI.", "tone": "sky" },
-    { "name": "QuoteDaily", "description": "Daily motivation for a better you.", "tone": "lilac" },
-    { "name": "DevUtils", "description": "Handy tools for developers.", "tone": "dark" }
+    {
+      "name": "Pin-it",
+      "description": "Civic issue reporting platform where users can pin and report local issues on a map. Built for community engagement and transparent municipal feedback.",
+      "url": "https://pin-it-jade.vercel.app/",
+      "image": "pin-it.webp",
+      "tags": ["MongoDB", "Express", "React", "Node.js"],
+      "tone": "blue"
+    },
+    {
+      "name": "Any Connect",
+      "description": "Real-time video chat application with WebRTC for peer-to-peer calls. Join rooms, talk, play games and connect with others instantly.",
+      "url": "https://anyconnectfrontend.vercel.app/",
+      "image": "any-connect.webp",
+      "tags": ["MERN", "Socket.io", "WebRTC"],
+      "tone": "violet"
+    },
+    {
+      "name": "FOF - Find Old Friend",
+      "description": "Platform to reconnect with old friends. User accounts, visitor stats, and donation tracking. Every new friend is a new adventure.",
+      "url": "https://fof-website.onrender.com/",
+      "image": "fof.webp",
+      "tags": ["React", "Node.js", "MongoDB", "Express", "JWT"],
+      "tone": "pink"
+    },
+    {
+      "name": "Habit Maker",
+      "description": "Daily habit tracker and todo app to build better routines. Track streaks, set goals, and stay consistent with a clean, focused interface.",
+      "url": "https://todo-daily-rahul.netlify.app/",
+      "image": "habit-maker.webp",
+      "tags": ["React", "Firebase"],
+      "tone": "sky"
+    },
+    {
+      "name": "Task Prioritizer",
+      "description": "Smart task management tool that helps you prioritize and focus on what matters. Organize, rank, and complete tasks with clarity.",
+      "url": "https://task-prioritizer.vercel.app/",
+      "image": "task-prioritizer.webp",
+      "tags": ["React", "Firebase"],
+      "tone": "lilac"
+    }
   ]
 }

@@ -158,22 +158,70 @@ The frontend is hosted on **Vercel** and the backend on **Cloudflare Workers**. 
 
 ### Backend: Cloudflare Worker
 
-```bash
-npm run deploy:backend
-```
+#### Deploy the backend
 
-This runs `tsc` on the Worker and then deploys via Wrangler to https://rahuls-digital-shelf-api.iamrahul25.workers.dev. D1 is automatically available — no secrets to set for the database. The Worker runs `CREATE TABLE IF NOT EXISTS` on each request, so tables are created on first use.
+1. Make sure Wrangler is logged in to the right Cloudflare account:
+
+   ```bash
+   npx wrangler whoami      # if not logged in: npx wrangler login
+   ```
+
+2. Deploy:
+
+   ```bash
+   npm run deploy:backend
+   ```
+
+   This type-checks the Worker (`npm run build:worker`) and then runs `wrangler deploy --config worker/wrangler.toml`, which uploads `worker/src/index.ts` to https://rahuls-digital-shelf-api.iamrahul25.workers.dev. The new version is live as soon as the command finishes.
+
+3. Check that the API responds:
+
+   ```bash
+   curl https://rahuls-digital-shelf-api.iamrahul25.workers.dev/api/problems
+   ```
+
+   Watch live requests and errors while testing:
+
+   ```bash
+   npx wrangler tail --config worker/wrangler.toml
+   ```
+
+D1 is bound through `wrangler.toml`, so the database needs no secret. The Worker runs `CREATE TABLE IF NOT EXISTS` on each request, so tables are created on first use.
 
 The Cloudflare account uses the `iamrahul25.workers.dev` subdomain. On a new account, register a `workers.dev` subdomain once in the Cloudflare dashboard (**Workers & Pages**) before the first deploy, otherwise Wrangler stops with *"You need to register a workers.dev subdomain"*. A brand-new subdomain can take a few minutes to get its SSL certificate.
 
-The `FRONTEND_ORIGIN` secret restricts CORS to the Vercel site. It is currently set to `https://all-apps-murex.vercel.app`. Update it if the frontend domain changes (for example, after adding a custom domain):
+#### Worker secrets (environment variables)
+
+The deployed Worker does **not** read `.env`. Production values are stored in Cloudflare as encrypted secrets:
+
+| Secret | Required | Purpose | Current value |
+|--------|----------|---------|---------------|
+| `ADMIN_PASSWORD` | Yes, for `/admin` | Admin login password; also signs admin tokens | Private |
+| `FRONTEND_ORIGIN` | Recommended | Allowed CORS origin; defaults to `*` if unset | `https://all-apps-murex.vercel.app` |
+
+Add a new secret or change an existing one (Wrangler prompts for the value, so it never lands in shell history):
 
 ```bash
+npx wrangler secret put ADMIN_PASSWORD --config worker/wrangler.toml
 npx wrangler secret put FRONTEND_ORIGIN --config worker/wrangler.toml
-# enter: https://all-apps-murex.vercel.app
 ```
 
-> Because CORS only allows the production URL, forms will not work on Vercel preview deployment URLs.
+List the secret names (values are never shown) and delete one:
+
+```bash
+npx wrangler secret list --config worker/wrangler.toml
+npx wrangler secret delete SECRET_NAME --config worker/wrangler.toml
+```
+
+Things to know:
+
+- `secret put` applies to the live Worker immediately; no redeploy is needed. Secrets also persist across later `npm run deploy:backend` runs.
+- Secrets can also be managed in the Cloudflare dashboard under **Workers & Pages → rahuls-digital-shelf-api → Settings → Variables and Secrets**.
+- Changing `ADMIN_PASSWORD` logs out every admin session, because admin tokens are signed with it.
+- To add a **new** variable, set it with `secret put`, add it to the `Env` interface in [`worker/src/index.ts`](worker/src/index.ts), read it as `env.YOUR_NAME`, and run `npm run deploy:backend`. Add it to `.env` / `.env.example` too, so the local Worker gets it.
+- Locally, `npm run dev:backend` loads the same names from the root `.env`. Check that its startup output lists them under *"Your Worker has access to the following bindings"*.
+
+> Because CORS only allows the production URL, forms will not work on Vercel preview deployment URLs. Update `FRONTEND_ORIGIN` if the frontend domain changes (for example, after adding a custom domain).
 
 ### Frontend: Vercel
 

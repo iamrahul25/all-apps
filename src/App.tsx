@@ -9,10 +9,11 @@ import projects from './data/projects.json'
 import { useFileLastUpdated } from './lib/github'
 
 type AppProject = { name: string; description: string; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; apkUrl: string }
-type WebsiteProject = { name: string; description: string; tone: string }
+type WebsiteProject = { name: string; description: string; url: string; image?: string; tags: string[]; tone: string }
 const apps: AppProject[] = projects.apps
 const websites: WebsiteProject[] = projects.websites
 const appIcons = import.meta.glob<string>('./assets/app-icons/*', { eager: true, query: '?url', import: 'default' })
+const sitePreviews = import.meta.glob<string>('./assets/site-previews/*', { eager: true, query: '?url', import: 'default' })
 
 // GitHub "blob" links open a preview page; "raw" redirects to the actual file, which browsers download.
 function getApkUrl(url: string) { return url.replace('/blob/', '/raw/') }
@@ -52,10 +53,16 @@ function AppCard({ app }: { app: AppProject }) {
   </article>
 }
 
+function WebsiteCard({ site }: { site: WebsiteProject }) {
+  const previewUrl = site.image ? sitePreviews[`./assets/site-previews/${site.image}`] : undefined
+  return <a className="website-card" href={site.url} target="_blank" rel="noreferrer" aria-label={`Open ${site.name} (opens in a new tab)`}>
+    <div className={`site-preview ${site.tone}${previewUrl ? ' has-image' : ''}`}>{previewUrl ? <img src={previewUrl} alt="" loading="lazy" /> : <span>{site.name.slice(0, 2).toUpperCase()}</span>}</div>
+    <div className="website-copy"><strong>{site.name}</strong><ExternalLink size={15} /><p>{site.description}</p>{site.tags.length > 0 && <ul className="site-tags">{site.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}</div>
+  </a>
+}
+
 function WebsitesGrid() {
-  return <div className="website-grid">{websites.map((site) => <a className="website-card" href="https://github.com/iamrahul25" target="_blank" rel="noreferrer" key={site.name}>
-    <div className={`site-preview ${site.tone}`}><span>{site.name.slice(0, 2).toUpperCase()}</span></div><div className="website-copy"><strong>{site.name}</strong><ExternalLink size={15} /><p>{site.description}</p></div>
-  </a>)}</div>
+  return <div className="website-grid">{websites.map((site) => <WebsiteCard key={site.name} site={site} />)}</div>
 }
 
 const navItems = [
