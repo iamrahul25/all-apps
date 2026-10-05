@@ -1,9 +1,9 @@
 /*
   Global design tokens. Change values here to restyle the whole site.
   :root holds the light theme (and theme-independent tokens); [data-theme='dark'] overrides colors only.
-  The --apps-* palette is always dark: the /apps page looks the same in both themes.
+  The --apps-* palette styles the /apps page; its dark values also feed the dark theme's colors.
 */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700;800&display=swap');
 
 :root {
 	color-scheme: light;
@@ -13,16 +13,16 @@
 	--font-mono: 'DM Mono', monospace;
 	--font-hand: 'Caveat', cursive;
 
-	--text-3xs: 8px;
-	--text-2xs: 9px;
-	--text-xs: 10px;
-	--text-sm: 11px;
-	--text-md: 12px;
-	--text-base: 13px;
-	--text-lg: 14px;
-	--text-xl: 15px;
-	--text-display: clamp(58px, 8vw, 112px);
-	--text-hero: clamp(46px, 5.2vw, 82px);
+	--text-3xs: .5rem;
+	--text-2xs: .5625rem;
+	--text-xs: .625rem;
+	--text-sm: .6875rem;
+	--text-md: .75rem;
+	--text-base: .8125rem;
+	--text-lg: .875rem;
+	--text-xl: .9375rem;
+	--text-display: clamp(3.625rem, 8vw, 7rem);
+	--text-hero: clamp(2.875rem, 5.2vw, 5.125rem);
 
 	/* Brand colors */
 	--color-primary: #171717;
@@ -47,6 +47,7 @@
 	--color-form: rgba(248,247,242,.8);
 	--color-list-item: rgba(255,255,255,.52);
 	--color-hero-art: var(--color-surface);
+	--color-hero-arc: #f0eadd;
 	--color-problem-bg: #fff9f3;
 	--color-demand-bg: #fffef2;
 	--color-admin-bg: #f6f8f2;
@@ -80,7 +81,38 @@
 	--shadow-offset: 7px 8px 0 rgba(23,23,23,.1);
 	--shadow-hero-art: none;
 
-	/* Apps palette (always dark) */
+	/* Apps palette */
+	--apps-bg: #f8f7f2;
+	--apps-border: rgba(23,23,23,.16);
+	--apps-card: #fffef8;
+	--apps-card-border: rgba(23,23,23,.16);
+	--apps-chip: #ecebe4;
+	--apps-placeholder: #dedcd3;
+	--apps-text: #171717;
+	--apps-text-soft: #4f4e49;
+	--apps-text-muted: #666560;
+	--apps-heading: #d4f541;
+	--apps-heart: #ff6668;
+	--apps-default-accent: #4ed5be;
+}
+
+/* Larger type scale for desktop; mobile breakpoints in styles.css step up to bigger tokens on their own. */
+@media (min-width: 761px) {
+	:root {
+		--text-3xs: .6875rem;
+		--text-2xs: .75rem;
+		--text-xs: .8125rem;
+		--text-sm: .875rem;
+		--text-md: .9375rem;
+		--text-base: 1rem;
+		--text-lg: 1.0625rem;
+		--text-xl: 1.125rem;
+	}
+}
+
+[data-theme='dark'] {
+	color-scheme: dark;
+
 	--apps-bg: #161b20;
 	--apps-border: #252d35;
 	--apps-card: #1c232b;
@@ -90,13 +122,6 @@
 	--apps-text: #f4f5ef;
 	--apps-text-soft: #d9d9d4;
 	--apps-text-muted: #aeb5b8;
-	--apps-heading: #d4f541;
-	--apps-heart: #ff6668;
-	--apps-default-accent: #4ed5be;
-}
-
-[data-theme='dark'] {
-	color-scheme: dark;
 
 	--color-primary: var(--apps-heading);
 	--color-primary-hover: #e4ff70;
@@ -114,7 +139,7 @@
 	--color-sidebar: rgba(22,27,32,.94);
 	--color-form: rgba(28,35,43,.8);
 	--color-list-item: rgba(255,255,255,.04);
-	--color-hero-art: #fff;
+	--color-hero-arc: #1e262e;
 	--color-problem-bg: #1d191b;
 	--color-demand-bg: #1c1c16;
 	--color-admin-bg: #151c18;
@@ -134,5 +159,4 @@
 	--shadow-panel: 0 2px 5px rgba(0,0,0,.3);
 	--shadow-card: 0 2px 2px rgba(0,0,0,.25);
 	--shadow-offset: 7px 8px 0 rgba(0,0,0,.35);
-	--shadow-hero-art: 0 6px 18px rgba(0,0,0,.35);
 }
