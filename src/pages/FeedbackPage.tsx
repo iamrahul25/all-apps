@@ -90,11 +90,67 @@ export function FeedbackRoute() {
 
 type TypeFilter = FeedbackType | 'all' | 'mine'
 
+// Touch screens scroll the row natively; this adds click-and-drag scrolling for mouse and pen.
+function useDragScroll<T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+    let startX = 0
+    let startScroll = 0
+    let pointerId: number | null = null
+    let dragging = false
+
+    const onDown = (event: PointerEvent) => {
+      if (event.pointerType === 'touch' || event.button !== 0 || element.scrollWidth <= element.clientWidth) return
+      pointerId = event.pointerId
+      startX = event.clientX
+      startScroll = element.scrollLeft
+      dragging = false
+    }
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return
+      const distance = event.clientX - startX
+      if (!dragging && Math.abs(distance) < 5) return
+      if (!dragging) {
+        dragging = true
+        element.setPointerCapture(event.pointerId)
+        element.classList.add('is-dragging')
+      }
+      element.scrollLeft = startScroll - distance
+    }
+    const onUp = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return
+      pointerId = null
+      if (!dragging) return
+      element.classList.remove('is-dragging')
+      if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId)
+      // A drag ends with a click on whichever chip is under the pointer; swallow it.
+      element.addEventListener('click', swallowClick, { capture: true, once: true })
+      setTimeout(() => element.removeEventListener('click', swallowClick, { capture: true }), 0)
+    }
+    const swallowClick = (event: MouseEvent) => { event.preventDefault(); event.stopPropagation() }
+
+    element.addEventListener('pointerdown', onDown)
+    element.addEventListener('pointermove', onMove)
+    element.addEventListener('pointerup', onUp)
+    element.addEventListener('pointercancel', onUp)
+    return () => {
+      element.removeEventListener('pointerdown', onDown)
+      element.removeEventListener('pointermove', onMove)
+      element.removeEventListener('pointerup', onUp)
+      element.removeEventListener('pointercancel', onUp)
+    }
+  }, [])
+  return ref
+}
+
 function FeedbackBoard({ project, selectedId }: { project: FeedbackProject; selectedId: number | null }) {
   const isAdmin = useAdminSession() !== null
   const navigate = useNavigate()
   const now = useNow(60_000)
   const searchRef = useRef<HTMLInputElement>(null)
+  const chipsRef = useDragScroll<HTMLDivElement>()
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [status, setStatus] = useState<FeedbackStatus | 'open' | ''>('')
   const [sort, setSort] = useState<FeedbackSort>('newest')
@@ -163,8 +219,8 @@ function FeedbackBoard({ project, selectedId }: { project: FeedbackProject; sele
       </header>
 
       <div className="fb-filters">
-        <div className="fb-chips" role="group" aria-label="Filter by type">
-          {chips.map(({ value, label, icon: Icon }) => <button key={value} type="button" className={`fb-chip fb-chip-${value}${typeFilter === value ? ' active' : ''}`} aria-pressed={typeFilter === value} onClick={() => setTypeFilter(value)}>
+        <div className="fb-chips" ref={chipsRef} role="group" aria-label="Filter by type">
+          {chips.map(({ value, label, icon: Icon }) => <button key={value} type="button" className={`fb-chip fb-chip-${value}${typeFilter === value ? ' active' : ''}`} aria-pressed={typeFilter === value} onClick={event => { setTypeFilter(value); event.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' }) }}>
             {Icon && <Icon size={14} />} {label}{value !== 'mine' && <span className="fb-chip-count">{counts[value] ?? 0}</span>}
           </button>)}
         </div>

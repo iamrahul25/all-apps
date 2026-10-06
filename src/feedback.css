@@ -226,9 +226,14 @@ a.fb-row:hover { background: var(--color-surface-hover); }
 @media (max-width: 760px) {
 	.fb-picker, .fb-page { min-height: calc(100svh - 82px); }
 	.fb-search input, .fb-selects select, .fb-field select, .fb-field input, .fb-form input, .fb-form textarea, .fb-comment-box textarea { font-size: 1rem; }
-	.fb-filters { align-items: stretch; flex-direction: column; }
-	.fb-chips { flex-wrap: nowrap; margin: 0 -16px; padding: 0 16px 4px; overflow-x: auto; scrollbar-width: none; }
-	.fb-chip { flex: none; }
+	/* Grid, not a wrapping flex column: wrapped flex lines size to content, which let the chip row overflow the page. */
+	.fb-filters { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+	.fb-chips { flex-wrap: nowrap; min-width: 0; margin: 0 -16px; padding: 2px 16px 6px; overflow-x: auto; overscroll-behavior-x: contain; scroll-padding-inline: 16px; scroll-snap-type: x proximity; scrollbar-width: none; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 28px), transparent); }
+	.fb-chips::-webkit-scrollbar { display: none; }
+	.fb-chips.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+	.fb-chips.is-dragging .fb-chip { cursor: grabbing; }
+	.fb-chip { flex: none; height: 36px; scroll-snap-align: start; }
+	.fb-selects { min-width: 0; }
 	.fb-selects select { flex: 1; min-width: 0; }
 	.fb-panel { width: 100vw; }
 	.fb-form-row { grid-template-columns: 1fr; }
@@ -237,4 +242,7 @@ a.fb-row:hover { background: var(--color-surface-hover); }
 }
 @media (max-width: 440px) {
 	.fb-title .fb-project-icon { display: none; }
+}
+@media (hover: none) {
+	.fb-search kbd { display: none; }
 }
