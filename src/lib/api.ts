@@ -22,7 +22,7 @@ type RequestPayload = {
 
 const apiUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+export async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const token = getAdminToken()
   const response = await fetch(`${apiUrl}${path}`, {
     ...options,

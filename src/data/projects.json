@@ -2,6 +2,7 @@
   "apps": [
     {
       "name": "Use-it",
+      "slug": "use-it",
       "description": "Use everyday things before they expire.",
       "status": "Stable",
       "tags": ["Productivity", "Reminders", "Daily Use"],
@@ -15,6 +16,7 @@
     },
     {
       "name": "Habit-app",
+      "slug": "habit-app",
       "description": "Build a rhythm that sticks, one day at a time.",
       "status": "Stable",
       "tags": ["Habits", "Tracking", "Motivation"],
@@ -28,6 +30,7 @@
     },
     {
       "name": "Connect The Dots",
+      "slug": "connect-the-dots",
       "description": "A relaxing neon puzzle game. Link matching dots, never cross paths and fill every cell across 100 levels and daily puzzles.",
       "status": "Stable",
       "tags": ["Puzzle", "Relaxing", "Offline"],
@@ -43,6 +46,7 @@
   "websites": [
     {
       "name": "Pin-it",
+      "slug": "pin-it",
       "description": "Civic issue reporting platform where users can pin and report local issues on a map. Built for community engagement and transparent municipal feedback.",
       "url": "https://pin-it-jade.vercel.app/",
       "repoUrl": "https://github.com/iamrahul25/PinIt",
@@ -52,6 +56,7 @@
     },
     {
       "name": "Any Connect",
+      "slug": "any-connect",
       "description": "Real-time video chat application with WebRTC for peer-to-peer calls. Join rooms, talk, play games and connect with others instantly.",
       "url": "https://anyconnectfrontend.vercel.app/",
       "repoUrl": "https://github.com/iamrahul25/Oolo",
@@ -61,6 +66,7 @@
     },
     {
       "name": "FOF - Find Old Friend",
+      "slug": "fof",
       "description": "Platform to reconnect with old friends. User accounts, visitor stats, and donation tracking. Every new friend is a new adventure.",
       "url": "https://fof-website.onrender.com/",
       "repoUrl": "https://github.com/iamrahul25/fofmern",
@@ -70,6 +76,7 @@
     },
     {
       "name": "Habit Maker",
+      "slug": "habit-maker",
       "description": "Daily habit tracker and todo app to build better routines. Track streaks, set goals, and stay consistent with a clean, focused interface.",
       "url": "https://todo-daily-rahul.netlify.app/",
       "repoUrl": "https://github.com/iamrahul25/habit-maker-app",
@@ -79,6 +86,7 @@
     },
     {
       "name": "Task Prioritizer",
+      "slug": "task-prioritizer",
       "description": "Smart task management tool that helps you prioritize and focus on what matters. Organize, rank, and complete tasks with clarity.",
       "url": "https://task-prioritizer.vercel.app/",
       "repoUrl": "https://github.com/iamrahul25/Task-Prioritizer",

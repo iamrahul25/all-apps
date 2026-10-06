@@ -1,4 +1,4 @@
-import { ArrowRight, ChartNoAxesColumnIncreasing, CheckCircle2, Code2, Coffee, Database, Download, ExternalLink, Globe2, GraduationCap, History, Home, ImageIcon, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, Moon, Plus, RefreshCw, Settings, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
+import { ArrowRight, ChartNoAxesColumnIncreasing, CheckCircle2, Code2, Coffee, Database, Download, ExternalLink, Globe2, GraduationCap, History, Home, ImageIcon, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, MessagesSquare, Moon, Plus, RefreshCw, Settings, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import heroDark from './assets/hero-dark.webp'
@@ -10,9 +10,11 @@ import { adminLogin, createRequest, deleteRequest, listRequests, type PublicRequ
 import projects from './data/projects.json'
 import { useFileLastUpdated } from './lib/github'
 import { toggleTheme, useTheme } from './lib/theme'
+import { formatTimeAgo, useNow } from './lib/time'
+import { FeedbackPickerPage, FeedbackRoute } from './pages/FeedbackPage'
 
-type AppProject = { name: string; description: string; status?: string; tags?: string[]; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; screenshot?: string; apkUrl: string; repoUrl?: string }
-type WebsiteProject = { name: string; description: string; url: string; repoUrl?: string; image?: string; tags: string[]; tone: string }
+type AppProject = { name: string; slug: string; description: string; status?: string; tags?: string[]; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; screenshot?: string; apkUrl: string; repoUrl?: string }
+type WebsiteProject = { name: string; slug: string; description: string; url: string; repoUrl?: string; image?: string; tags: string[]; tone: string }
 const apps: AppProject[] = projects.apps
 const websites: WebsiteProject[] = projects.websites
 const appIcons = import.meta.glob<string>('./assets/app-icons/*', { eager: true, query: '?url', import: 'default' })
@@ -24,20 +26,6 @@ function getApkUrl(url: string) { return url.replace('/blob/', '/raw/') }
 
 const shortMonth = new Intl.DateTimeFormat('en-US', { month: 'short' })
 const formatUpdatedDate = (date: Date) => `${date.getDate()} ${shortMonth.format(date)} ${date.getFullYear()}`
-
-const relativeTime = new Intl.RelativeTimeFormat('en', { numeric: 'always' })
-const relativeUnits: [Intl.RelativeTimeFormatUnit, number][] = [['year', 31536000], ['month', 2592000], ['week', 604800], ['day', 86400], ['hour', 3600], ['minute', 60]]
-function formatTimeAgo(date: Date, now: number) {
-  const seconds = Math.round((now - date.getTime()) / 1000)
-  for (const [unit, unitSeconds] of relativeUnits) if (seconds >= unitSeconds) return relativeTime.format(-Math.floor(seconds / unitSeconds), unit)
-  return 'just now'
-}
-
-function useNow(intervalMs: number) {
-  const [now, setNow] = useState(Date.now)
-  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), intervalMs); return () => clearInterval(timer) }, [intervalMs])
-  return now
-}
 
 function AppUpdated({ apkUrl }: { apkUrl: string }) {
   const updated = useFileLastUpdated(apkUrl)
@@ -54,6 +42,10 @@ function GitHubIcon({ size }: { size: number }) {
 
 function SourceLink({ name, repoUrl }: { name: string; repoUrl: string }) {
   return <a className="source-link" href={repoUrl} target="_blank" rel="noreferrer" aria-label={`View ${name} source code on GitHub (opens in a new tab)`}><GitHubIcon size={14} /> Source code</a>
+}
+
+function FeedbackLink({ name, slug }: { name: string; slug: string }) {
+  return <Link className="source-link" to={`/suggest/${slug}`} aria-label={`Give feedback on ${name}`}><MessagesSquare size={14} /> Give feedback</Link>
 }
 
 function PhoneSkeleton() {
@@ -75,7 +67,7 @@ function AppCard({ app }: { app: AppProject }) {
     <ul className="app-meta"><li><History size={14} /> v{app.version}</li><li>{app.downloads ? <><Download size={14} /> {app.downloads} downloads</> : <span className="app-new">New</span>}</li>{app.size && <li><Database size={14} /> {app.size}</li>}</ul>
     <AppUpdated apkUrl={app.apkUrl} />
     <a className="download-button" href={getApkUrl(app.apkUrl)} download rel="noreferrer" aria-label={`Download ${app.name} APK${app.size ? ` (${app.size})` : ''}`}><Download size={16} /> Download APK</a>
-    {app.repoUrl && <SourceLink name={app.name} repoUrl={app.repoUrl} />}
+    <div className="card-links">{app.repoUrl && <SourceLink name={app.name} repoUrl={app.repoUrl} />}<FeedbackLink name={app.name} slug={app.slug} /></div>
   </article>
 }
 
@@ -109,7 +101,7 @@ function WebsiteCard({ site }: { site: WebsiteProject }) {
       <div className={`site-preview ${site.tone}${previewUrl ? ' has-image' : ''}`}>{previewUrl ? <img src={previewUrl} alt="" loading="lazy" /> : <span>{site.name.slice(0, 2).toUpperCase()}</span>}</div>
       <div className="website-copy"><strong>{site.name}</strong><ExternalLink size={15} /><p>{site.description}</p>{site.tags.length > 0 && <ul className="site-tags">{site.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}</div>
     </a>
-    {site.repoUrl && <SourceLink name={site.name} repoUrl={site.repoUrl} />}
+    <div className="card-links">{site.repoUrl && <SourceLink name={site.name} repoUrl={site.repoUrl} />}<FeedbackLink name={site.name} slug={site.slug} /></div>
   </article>
 }
 
@@ -124,6 +116,7 @@ const navItems = [
   { to: '/about', label: 'About', icon: UserRound },
   { to: '/problem', label: 'Problem', icon: MessageSquareWarning },
   { to: '/demand', label: 'Demand', icon: Lightbulb },
+  { to: '/suggest', label: 'Feedback', icon: MessagesSquare },
 ]
 
 function ThemeToggle({ iconSize }: { iconSize: number }) {
@@ -137,8 +130,11 @@ function Shell({ children }: { children: React.ReactNode }) {
   const mobileNavRef = useRef<HTMLElement>(null)
   const { pathname } = useLocation()
   const isAdmin = useAdminSession() !== null
+  // Opening an item at /suggest/<app>/<id> must keep the board mounted, so pages are keyed by their first two segments.
+  const pageKey = pathname.split('/').slice(0, 3).join('/')
 
-  useEffect(() => { setMenuOpen(false); window.scrollTo(0, 0) }, [pathname])
+  useEffect(() => { setMenuOpen(false) }, [pathname])
+  useEffect(() => { window.scrollTo(0, 0) }, [pageKey])
 
   useEffect(() => {
     if (!menuOpen) return
@@ -154,7 +150,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
     </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><ThemeToggle iconSize={15} /><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
     <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}<ThemeToggle iconSize={16} /></div></nav>
-    <div className="dashboard" key={pathname}>{children}</div>
+    <div className="dashboard" key={pageKey}>{children}</div>
   </main>
 }
 
@@ -285,8 +281,8 @@ function AdminPage() {
   }
 
   return <section className="standalone-panel request-page admin-page" aria-labelledby="admin-title">
-    <div className="request-intro"><p className="eyebrow">// admin</p><h1 id="admin-title">Admin</h1><p>{session ? 'You are logged in. Delete buttons and submitter emails now appear on the Problem and Demand pages.' : 'Log in to manage problems and demands.'}</p></div>
-    {session ? <div className="request-success admin-panel"><ShieldCheck size={42} /><h2>Admin user</h2><p>Session active until {new Date(session.expiresAt).toLocaleString()}.</p><div className="admin-links"><Link to="/problem">Manage problems <ArrowRight size={14} /></Link><Link to="/demand">Manage demands <ArrowRight size={14} /></Link></div><button type="button" onClick={clearAdminSession}><LogOut size={15} /> Log out</button></div> : <form className="request-form" onSubmit={handleLogin}>
+    <div className="request-intro"><p className="eyebrow">// admin</p><h1 id="admin-title">Admin</h1><p>{session ? 'You are logged in. Delete buttons and submitter emails now appear on the Problem and Demand pages, and you can reply to and manage feedback.' : 'Log in to manage problems, demands and feedback.'}</p></div>
+    {session ? <div className="request-success admin-panel"><ShieldCheck size={42} /><h2>Admin user</h2><p>Session active until {new Date(session.expiresAt).toLocaleString()}.</p><div className="admin-links"><Link to="/problem">Manage problems <ArrowRight size={14} /></Link><Link to="/demand">Manage demands <ArrowRight size={14} /></Link><Link to="/suggest">Manage feedback <ArrowRight size={14} /></Link></div><button type="button" onClick={clearAdminSession}><LogOut size={15} /> Log out</button></div> : <form className="request-form" onSubmit={handleLogin}>
       <label>Admin password<input type="password" name="password" autoComplete="current-password" required autoFocus /></label>
       <button className="request-submit" type="submit" disabled={submitting}>{submitting ? 'Checking…' : 'Log in'} <ArrowRight size={16} /></button>
     </form>}
@@ -295,7 +291,7 @@ function AdminPage() {
 }
 
 function App() {
-  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/problem" element={<RequestPage type="problem" />} /><Route path="/demand" element={<RequestPage type="demand" />} /><Route path="/admin" element={<AdminPage />} /></Routes></Shell></BrowserRouter>
+  return <BrowserRouter><Shell><Routes><Route path="/" element={<HomePage />} /><Route path="/apps" element={<AppsPage />} /><Route path="/websites" element={<WebsitesPage />} /><Route path="/about" element={<AboutPage />} /><Route path="/problem" element={<RequestPage type="problem" />} /><Route path="/demand" element={<RequestPage type="demand" />} /><Route path="/admin" element={<AdminPage />} /><Route path="/suggest" element={<FeedbackPickerPage />} /><Route path="/suggest/:slug/:id?" element={<FeedbackRoute />} /></Routes></Shell></BrowserRouter>
 }
 
 export default App
