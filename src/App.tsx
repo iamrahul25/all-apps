@@ -28,10 +28,11 @@ const shortMonth = new Intl.DateTimeFormat('en-US', { month: 'short' })
 const formatUpdatedDate = (date: Date) => `${date.getDate()} ${shortMonth.format(date)} ${date.getFullYear()}`
 
 function AppUpdated({ apkUrl }: { apkUrl: string }) {
-  const updated = useFileLastUpdated(apkUrl)
+  const { updated, refreshing, refresh } = useFileLastUpdated(apkUrl)
   const now = useNow(60_000)
-  if (updated.status === 'ready') return <p className="app-updated"><History size={14} /> Updated <time dateTime={updated.date.toISOString()} title={updated.date.toLocaleString()}>{formatUpdatedDate(updated.date)}</time> <span className="time-ago">({formatTimeAgo(updated.date, now)})</span></p>
-  if (updated.status === 'error') return <p className="app-updated"><a href={apkUrl} target="_blank" rel="noreferrer">View release on GitHub <ExternalLink size={11} /></a></p>
+  const refreshButton = <button type="button" className={`app-updated-refresh${refreshing ? ' is-spinning' : ''}`} onClick={refresh} disabled={refreshing} aria-label="Refresh last updated date" title="Refresh"><RefreshCw size={12} /></button>
+  if (updated.status === 'ready') return <p className="app-updated"><History size={14} /> Updated <time dateTime={updated.date.toISOString()} title={updated.date.toLocaleString()}>{formatUpdatedDate(updated.date)}</time> <span className="time-ago">({formatTimeAgo(updated.date, now)})</span>{refreshButton}</p>
+  if (updated.status === 'error') return <p className="app-updated"><a href={apkUrl} target="_blank" rel="noreferrer">View release on GitHub <ExternalLink size={11} /></a>{refreshButton}</p>
   return <p className="app-updated is-loading"><History size={14} /> Checking GitHub…</p>
 }
 
