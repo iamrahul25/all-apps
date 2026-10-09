@@ -93,6 +93,24 @@
       "image": "task-prioritizer.webp",
       "tags": ["React", "Firebase"],
       "tone": "lilac"
+    },
+    {
+      "name": "Useful Tools",
+      "slug": "useful-tools",
+      "description": "A collection of handy everyday tools: trim videos, download Instagram videos from a link, and convert images between PNG, JPG and WebP.",
+      "url": "https://useful-tools-eta.vercel.app/",
+      "image": "useful-tools.webp",
+      "tags": ["Video", "Images", "Utilities"],
+      "tone": "sky"
+    },
+    {
+      "name": "Apps and Website Portfolio",
+      "slug": "apps-portfolio",
+      "description": "Rahul's digital shelf: a portfolio of apps, websites and little ideas that make life easier, with feedback, problem and demand boards.",
+      "url": "https://all-apps-murex.vercel.app/apps",
+      "image": "apps-portfolio.webp",
+      "tags": ["React", "TypeScript", "Vite"],
+      "tone": "violet"
     }
   ]
 }

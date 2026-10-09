@@ -112,12 +112,12 @@ function WebsitesGrid() {
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home, end: true },
-  { to: '/apps', label: 'Apps', icon: Smartphone },
   { to: '/websites', label: 'Websites', icon: Globe2 },
-  { to: '/about', label: 'About', icon: UserRound },
+  { to: '/apps', label: 'Apps', icon: Smartphone },
+  { to: '/suggest', label: 'Feedback', icon: MessagesSquare },
   { to: '/problem', label: 'Problem', icon: MessageSquareWarning },
   { to: '/demand', label: 'Demand', icon: Lightbulb },
-  { to: '/suggest', label: 'Feedback', icon: MessagesSquare },
+  { to: '/about', label: 'About', icon: UserRound },
 ]
 
 function ThemeToggle({ iconSize }: { iconSize: number }) {
