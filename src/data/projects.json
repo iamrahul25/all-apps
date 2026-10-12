@@ -104,6 +104,16 @@
       "tone": "sky"
     },
     {
+      "name": "Daily Finds",
+      "slug": "daily-finds",
+      "description": "A cute affiliate catalog of hand-picked daily finds. Search, filter by category and sort products, then buy on Amazon, Flipkart or Myntra. Includes an admin panel to add products.",
+      "url": "https://daily-finds-gray.vercel.app/",
+      "repoUrl": "https://github.com/iamrahul25/daily-finds",
+      "image": "daily-finds.webp",
+      "tags": ["Next.js", "TypeScript", "Cloudflare D1", "Workers KV"],
+      "tone": "pink"
+    },
+    {
       "name": "Apps and Website Portfolio",
       "slug": "apps-portfolio",
       "description": "Rahul's digital shelf: a portfolio of apps, websites and little ideas that make life easier, with feedback, problem and demand boards.",

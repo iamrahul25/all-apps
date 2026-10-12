@@ -194,11 +194,11 @@ a.fb-row:hover { background: var(--color-surface-hover); }
 /* display:none (not off-screen) so browser autofill never fills the honeypot. */
 .fb-hp { display: none; }
 .fb-form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
-.fb-created { display: grid; justify-items: start; gap: 12px; margin-top: 14px; font-size: var(--text-sm); line-height: 1.5; }
+.fb-created { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: start; gap: 12px; margin-top: 14px; font-size: var(--text-sm); line-height: 1.5; }
 .fb-created > svg { color: var(--color-secondary); }
-.fb-link-box { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 6px 6px 12px; border: 1px solid var(--color-line-strong); border-radius: 9px; background: var(--color-surface-input); }
-.fb-link-box code { flex: 1; overflow: hidden; font-family: var(--font-mono); font-size: var(--text-2xs); text-overflow: ellipsis; white-space: nowrap; }
-.fb-link-box .fb-secondary { min-height: 32px; padding: 0 10px; font-size: var(--text-2xs); }
+.fb-link-box { display: flex; align-items: center; gap: 8px; width: 100%; min-width: 0; padding: 8px 8px 8px 12px; border: 1px solid var(--color-line-strong); border-radius: 9px; background: var(--color-surface-input); }
+.fb-link-box code { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: var(--text-2xs); line-height: 1.5; overflow-wrap: anywhere; word-break: break-all; }
+.fb-link-box .fb-secondary { flex-shrink: 0; min-height: 32px; padding: 0 10px; font-size: var(--text-2xs); }
 
 /* Responsive: list columns follow the board's own width, so they adapt when the side panel opens. */
 @container fb-main (max-width: 1000px) {
