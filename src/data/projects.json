@@ -22,10 +22,13 @@
       "tags": ["Habits", "Tracking", "Motivation"],
       "version": "1.0.0",
       "downloads": "10K+",
-      "size": "236 MB",
-      "accent": "#ff736e",
+      "size": "126 MB",
+      "accent": "#3b9bff",
       "initials": "HA",
-      "apkUrl": "https://github.com/iamrahul25/habit-app/blob/master/build-apk/app-release.apk",
+      "icon": "habit-app.webp",
+      "screenshot": "habit-app.webp",
+      "apkUrl": "https://github.com/Night-Wise/habit-care/blob/master/release/app-release.apk",
+      "playTestUrl": "https://play.google.com/apps/internaltest/4701734893265507503",
       "repoUrl": "https://github.com/Night-Wise/habit-care"
     },
     {
@@ -36,10 +39,12 @@
       "tags": ["Puzzle", "Relaxing", "Offline"],
       "version": "1.0.0",
       "size": "148 MB",
-      "accent": "#3b9bff",
+      "accent": "#ff736e",
       "initials": "CD",
       "icon": "connect-the-dots.webp",
+      "screenshot": "connect-the-dots.webp",
       "apkUrl": "https://github.com/iamrahul25/connect-the-dots/blob/master/release/app-release.apk",
+      "playTestUrl": "https://play.google.com/apps/internaltest/4701030310044885193",
       "repoUrl": "https://github.com/iamrahul25/connect-the-dots"
     }
   ],

@@ -1,4 +1,4 @@
-import { ArrowRight, ChartNoAxesColumnIncreasing, CheckCircle2, Code2, Coffee, Database, Download, ExternalLink, Globe2, GraduationCap, History, Home, ImageIcon, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, MessagesSquare, Moon, Plus, RefreshCw, Settings, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
+import { ArrowRight, ChartNoAxesColumnIncreasing, Check, CheckCircle2, Code2, Coffee, Copy, Database, Download, ExternalLink, Globe2, GraduationCap, History, Home, ImageIcon, Lightbulb, LogOut, Mail, Menu, MessageSquareWarning, MessagesSquare, Moon, Play, Plus, RefreshCw, Settings, ShieldCheck, Smartphone, Sun, Trash2, UserRound, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import heroDark from './assets/hero-dark.webp'
@@ -13,7 +13,7 @@ import { toggleTheme, useTheme } from './lib/theme'
 import { formatTimeAgo, useNow } from './lib/time'
 import { FeedbackPickerPage, FeedbackRoute } from './pages/FeedbackPage'
 
-type AppProject = { name: string; slug: string; description: string; status?: string; tags?: string[]; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; screenshot?: string; apkUrl: string; repoUrl?: string }
+type AppProject = { name: string; slug: string; description: string; status?: string; tags?: string[]; version: string; downloads?: string; size?: string; accent: string; initials: string; icon?: string; screenshot?: string; apkUrl: string; playTestUrl?: string; repoUrl?: string }
 type WebsiteProject = { name: string; slug: string; description: string; url: string; repoUrl?: string; image?: string; tags: string[]; tone: string }
 const apps: AppProject[] = projects.apps
 const websites: WebsiteProject[] = projects.websites
@@ -49,6 +49,12 @@ function FeedbackLink({ name, slug }: { name: string; slug: string }) {
   return <Link className="source-link" to={`/suggest/${slug}`} aria-label={`Give feedback on ${name}`}><MessagesSquare size={14} /> Give feedback</Link>
 }
 
+function CopyLinkButton({ url, label }: { url: string; label: string }) {
+  const [copied, setCopied] = useState(false)
+  useEffect(() => { if (!copied) return; const timer = setTimeout(() => setCopied(false), 1500); return () => clearTimeout(timer) }, [copied])
+  return <button type="button" className={`copy-link-button${copied ? ' is-copied' : ''}`} title={copied ? 'Copied!' : label} aria-label={copied ? 'Link copied' : label} onClick={() => navigator.clipboard.writeText(url).then(() => setCopied(true))}>{copied ? <Check size={16} /> : <Copy size={16} />}</button>
+}
+
 function PhoneSkeleton() {
   return <div className="phone-skeleton"><span className="sk-title" /><span className="sk-sub" /><span className="sk-row" /><span className="sk-row" /><span className="sk-row" /><span className="sk-row" /><span className="sk-fab" /></div>
 }
@@ -63,11 +69,17 @@ function AppCard({ app }: { app: AppProject }) {
         <h3>{app.name}</h3><p>{app.description}</p>
         {app.tags && app.tags.length > 0 && <ul className="app-tags">{app.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}
       </div>
-      <div className="app-phone">{screenshotUrl ? <img src={screenshotUrl} alt={`${app.name} screenshot`} loading="lazy" /> : <PhoneSkeleton />}</div>
+      <div className={`app-phone${screenshotUrl ? ' has-screenshot' : ''}`}>{screenshotUrl ? <img src={screenshotUrl} alt={`${app.name} screenshot`} loading="lazy" /> : <PhoneSkeleton />}</div>
     </div>
     <ul className="app-meta"><li><History size={14} /> v{app.version}</li><li>{app.downloads ? <><Download size={14} /> {app.downloads} downloads</> : <span className="app-new">New</span>}</li>{app.size && <li><Database size={14} /> {app.size}</li>}</ul>
     <AppUpdated apkUrl={app.apkUrl} />
-    <a className="download-button" href={getApkUrl(app.apkUrl)} download rel="noreferrer" aria-label={`Download ${app.name} APK${app.size ? ` (${app.size})` : ''}`}><Download size={16} /> Download APK</a>
+    <div className={`download-row${app.playTestUrl ? ' has-play' : ''}`}>
+      <a className="download-button" href={getApkUrl(app.apkUrl)} download rel="noreferrer" aria-label={`Download ${app.name} APK from GitHub${app.size ? ` (${app.size})` : ''}`}><Download size={16} /><span>APK<small>GitHub</small></span></a>
+      {app.playTestUrl && <>
+        <a className="download-button is-play" href={app.playTestUrl} target="_blank" rel="noreferrer" aria-label={`Get ${app.name} from Play Store internal testing (opens in a new tab)`}><Play size={16} /><span>AAB · Play<small>Internal test</small></span></a>
+        <CopyLinkButton url={app.playTestUrl} label={`Copy ${app.name} internal test link`} />
+      </>}
+    </div>
     <div className="card-links">{app.repoUrl && <SourceLink name={app.name} repoUrl={app.repoUrl} />}<FeedbackLink name={app.name} slug={app.slug} /></div>
   </article>
 }
