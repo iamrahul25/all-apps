@@ -33,6 +33,8 @@
 	--color-secondary-tint: rgba(78,151,78,.1);
 	--color-highlight: #ffd23d;
 	--color-accent: #e56b6f;
+	--color-hero-button: var(--color-primary);
+	--color-hero-button-shadow: var(--color-highlight);
 	--color-problem: #ff8a80;
 	--color-demand: #f4c542;
 	--color-danger: #b64036;
@@ -137,6 +139,8 @@
 	--color-primary: var(--apps-heading);
 	--color-primary-hover: #e4ff70;
 	--color-on-primary: #101719;
+	--color-hero-button: #ffd23d;
+	--color-hero-button-shadow: #e56b6f;
 	--color-secondary: #6fbf6f;
 	--color-secondary-soft: #5fa35f;
 	--color-secondary-tint: rgba(111,191,111,.12);
