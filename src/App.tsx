@@ -9,6 +9,7 @@ import { clearAdminSession, useAdminSession } from './lib/admin'
 import { adminLogin, createRequest, deleteRequest, listRequests, type PublicRequest } from './lib/api'
 import projects from './data/projects.json'
 import { useFileLastUpdated } from './lib/github'
+import { promptInstall, useCanInstall } from './lib/install'
 import { toggleTheme, useTheme } from './lib/theme'
 import { formatTimeAgo, useNow } from './lib/time'
 import { FeedbackPickerPage, FeedbackRoute } from './pages/FeedbackPage'
@@ -138,6 +139,11 @@ function ThemeToggle({ iconSize }: { iconSize: number }) {
   return <button className="theme-toggle" type="button" onClick={toggleTheme} aria-pressed={isDark} aria-label="Dark mode"><Icon size={iconSize} /> {isDark ? 'Light mode' : 'Dark mode'}</button>
 }
 
+function InstallButton({ iconSize }: { iconSize: number }) {
+  if (!useCanInstall()) return null
+  return <button className="install-button" type="button" onClick={promptInstall}><Download size={iconSize} /> Install app</button>
+}
+
 function Shell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const mobileNavRef = useRef<HTMLElement>(null)
@@ -161,8 +167,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   return <main>
     <aside className="sidebar"><Link className="wordmark" to="/">RK<span>.</span></Link><nav className="side-nav" aria-label="Primary navigation">
       {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
-    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><ThemeToggle iconSize={15} /><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
-    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}<ThemeToggle iconSize={16} /></div></nav>
+    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><div className="sidebar-actions"><InstallButton iconSize={15} /><ThemeToggle iconSize={15} /></div><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
+    <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}<InstallButton iconSize={16} /><ThemeToggle iconSize={16} /></div></nav>
     <div className="dashboard" key={pageKey}>{children}</div>
   </main>
 }
