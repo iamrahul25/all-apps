@@ -46,6 +46,19 @@
       "apkUrl": "https://github.com/iamrahul25/connect-the-dots/blob/master/release/app-release.apk",
       "playTestUrl": "https://play.google.com/apps/internaltest/4701030310044885193",
       "repoUrl": "https://github.com/iamrahul25/connect-the-dots"
+    },
+    {
+      "name": "Arrow Escape",
+      "slug": "arrow-escape",
+      "description": "A brain-teasing puzzle game. Tap arrows so they slide off the board without colliding, with paths that bend around 90° corners.",
+      "status": "Stable",
+      "tags": ["Puzzle", "Game", "Offline"],
+      "version": "1.0.0",
+      "size": "127 MB",
+      "accent": "#3b82f6",
+      "initials": "AE",
+      "apkUrl": "https://github.com/iamrahul25/arrow-escape/blob/master/release/app-release.apk",
+      "repoUrl": "https://github.com/iamrahul25/arrow-escape"
     }
   ],
   "websites": [
@@ -126,6 +139,15 @@
       "image": "apps-portfolio.webp",
       "tags": ["React", "TypeScript", "Vite"],
       "tone": "violet"
+    },
+    {
+      "name": "3D Portfolio",
+      "slug": "3d-portfolio",
+      "description": "An interactive 3D developer workspace. Drag to look around 360°, zoom in, and click the monitor to explore projects, skills and contact details.",
+      "url": "https://3d-portfolio-brown-psi.vercel.app/",
+      "image": "3d-portfolio.webp",
+      "tags": ["Next.js", "React Three Fiber", "Three.js", "Motion"],
+      "tone": "sky"
     }
   ]
 }
