@@ -59,6 +59,20 @@
       "initials": "AE",
       "apkUrl": "https://github.com/iamrahul25/arrow-escape/blob/master/release/app-release.apk",
       "repoUrl": "https://github.com/iamrahul25/arrow-escape"
+    },
+    {
+      "name": "Battleship",
+      "slug": "battleship",
+      "description": "The classic naval strategy game. Hide your fleet, hunt enemy ships across a 10×10 grid and spend energy on Artillery and Sonar to turn the tide.",
+      "status": "Stable",
+      "tags": ["Strategy", "Game", "Board Game"],
+      "version": "1.0.0",
+      "size": "147 MB",
+      "accent": "#0ea5e9",
+      "initials": "BS",
+      "screenshot": "battleship.webp",
+      "apkUrl": "https://github.com/iamrahul25/Battleship/blob/main/release/app-release.apk",
+      "repoUrl": "https://github.com/iamrahul25/Battleship"
     }
   ],
   "websites": [
