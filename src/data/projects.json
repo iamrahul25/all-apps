@@ -73,6 +73,19 @@
       "screenshot": "battleship.webp",
       "apkUrl": "https://github.com/iamrahul25/Battleship/blob/main/release/app-release.apk",
       "repoUrl": "https://github.com/iamrahul25/Battleship"
+    },
+    {
+      "name": "AR-Games",
+      "slug": "ar-games",
+      "description": "Move your body to play. Camera-based pose tracking powers an Endless Runner and Match Pose challenges, all processed on your device.",
+      "status": "Stable",
+      "tags": ["AR", "Game", "Fitness"],
+      "version": "1.0.0",
+      "size": "254 MB",
+      "accent": "#10b981",
+      "initials": "AR",
+      "apkUrl": "https://github.com/iamrahul25/AR-Games/blob/master/release/release-app.apk",
+      "repoUrl": "https://github.com/iamrahul25/AR-Games"
     }
   ],
   "websites": [
