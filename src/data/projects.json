@@ -57,7 +57,9 @@
       "size": "127 MB",
       "accent": "#3b82f6",
       "initials": "AE",
+      "screenshot": "arrow-escape.webp",
       "apkUrl": "https://github.com/iamrahul25/arrow-escape/blob/master/release/app-release.apk",
+      "playTestUrl": "https://play.google.com/apps/internaltest/4701590909968978300",
       "repoUrl": "https://github.com/iamrahul25/arrow-escape"
     },
     {
@@ -72,6 +74,7 @@
       "initials": "BS",
       "screenshot": "battleship.webp",
       "apkUrl": "https://github.com/iamrahul25/Battleship/blob/main/release/app-release.apk",
+      "playTestUrl": "https://play.google.com/apps/internaltest/4701413683871064014",
       "repoUrl": "https://github.com/iamrahul25/Battleship"
     },
     {
