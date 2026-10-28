@@ -124,19 +124,40 @@ function WebsitesGrid() {
 }
 
 const navItems = [
-  { to: '/', label: 'Home', icon: Home, end: true },
-  { to: '/websites', label: 'Websites', icon: Globe2 },
-  { to: '/apps', label: 'Apps', icon: Smartphone },
-  { to: '/suggest', label: 'Feedback', icon: MessagesSquare },
-  { to: '/problem', label: 'Problem', icon: MessageSquareWarning },
-  { to: '/demand', label: 'Demand', icon: Lightbulb },
-  { to: '/about', label: 'About', icon: UserRound },
+  { to: '/', label: 'Home', icon: Home, accent: '#f5a524', end: true },
+  { to: '/websites', label: 'Websites', icon: Globe2, accent: '#5a64b8' },
+  { to: '/apps', label: 'Apps', icon: Smartphone, accent: '#3f9a5c' },
+  { to: '/suggest', label: 'Feedback', icon: MessagesSquare, accent: '#7d4fc0' },
+  { to: '/problem', label: 'Problem', icon: MessageSquareWarning, accent: '#d6524c' },
+  { to: '/demand', label: 'Demand', icon: Lightbulb, accent: '#eba21a' },
+  { to: '/about', label: 'About', icon: UserRound, accent: '#3f6fc2' },
 ]
 
 function ThemeToggle({ iconSize }: { iconSize: number }) {
   const isDark = useTheme() === 'dark'
   const Icon = isDark ? Sun : Moon
   return <button className="theme-toggle" type="button" onClick={toggleTheme} aria-pressed={isDark} aria-label="Dark mode"><Icon size={iconSize} /> {isDark ? 'Light mode' : 'Dark mode'}</button>
+}
+
+function SidebarThemeSwitch() {
+  const isDark = useTheme() === 'dark'
+  return <button className="sidebar-row sidebar-theme-switch" type="button" role="switch" aria-checked={isDark} onClick={toggleTheme}><Moon size={17} /> Dark Mode <span className="switch-track" aria-hidden="true"><span className="switch-thumb" /></span></button>
+}
+
+function RocketArt() {
+  return <svg className="sidebar-rocket" viewBox="0 0 120 120" aria-hidden="true">
+    <g fill="var(--rocket-cloud)"><circle cx="20" cy="104" r="14" /><circle cx="40" cy="100" r="17" /><circle cx="62" cy="108" r="12" /><circle cx="8" cy="114" r="10" /></g>
+    <g fill="#f7c46a"><path d="M30 34l2 6 6 2-6 2-2 6-2-6-6-2 6-2Z" /><path d="M14 64l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5Z" /><path d="M100 82l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5Z" /></g>
+    <g transform="rotate(38 62 58)">
+      <path d="M55 86c0 10 7 18 7 18s7-8 7-18Z" fill="#ffd98a" />
+      <path d="M50 76h24l-4 10H54Z" fill="#f2a62a" />
+      <path d="M49 58c-10 4-14 15-13 28l14-10Z" fill="#f5a524" />
+      <path d="M75 58c10 4 14 15 13 28L74 76Z" fill="#f5a524" />
+      <path d="M62 12c15 12 19 34 14 64H48c-5-30-1-52 14-64Z" fill="#fffaf0" stroke="#f3dcb4" strokeWidth="1.5" />
+      <path d="M62 12c7 6 11 13 13 22H49c2-9 6-16 13-22Z" fill="#f7b538" />
+      <circle cx="62" cy="50" r="7.5" fill="#55555e" stroke="#fff" strokeWidth="3" />
+    </g>
+  </svg>
 }
 
 function InstallButton({ iconSize }: { iconSize: number }) {
@@ -166,8 +187,11 @@ function Shell({ children }: { children: React.ReactNode }) {
 
   return <main>
     <aside className="sidebar"><Link className="wordmark" to="/">RK<span>.</span></Link><nav className="side-nav" aria-label="Primary navigation">
-      {navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''}><Icon size={16} /> {label}</NavLink>)}
-    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}<div className="sidebar-footer"><div className="sidebar-actions"><InstallButton iconSize={15} /><ThemeToggle iconSize={15} /></div><span className="build-note">Build<br />Ideas<br />Ship<br />Repeat <ArrowRight size={14} /></span></div></aside>
+      {navItems.map(({ to, label, icon: Icon, accent, end }) => <NavLink key={to} to={to} end={end} className={({ isActive }) => isActive ? 'active' : ''} style={{ '--nav-accent': accent } as React.CSSProperties}><span className="side-nav-icon"><Icon size={17} /></span> {label}</NavLink>)}
+    </nav>{isAdmin && <Link className="admin-badge" to="/admin" title="Logged in as admin"><ShieldCheck size={14} /> Admin</Link>}
+      <div className="sidebar-footer"><div className="sidebar-actions"><InstallButton iconSize={17} /><SidebarThemeSwitch /></div>
+        <Link className="build-card" to="/apps" aria-label="Ideas, build, ship, repeat: explore my work"><span className="build-card-label">Ideas</span><strong>Build<br />Ship<br />Repeat</strong><ArrowRight size={18} /><RocketArt /></Link>
+      </div></aside>
     <nav className="mobile-topbar" aria-label="Mobile navigation" ref={mobileNavRef}><Link className="wordmark" to="/">RK<span>.</span></Link><button className="menu-button" type="button" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="mobile-menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button><div className={`mobile-menu${menuOpen ? ' open' : ''}`} id="mobile-menu">{navItems.map(({ to, label, icon: Icon, end }) => <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)}><Icon size={16} /> {label}</NavLink>)}{isAdmin && <NavLink className="mobile-admin-link" to="/admin" onClick={() => setMenuOpen(false)}><ShieldCheck size={16} /> Admin</NavLink>}<InstallButton iconSize={16} /><ThemeToggle iconSize={16} /></div></nav>
     <div className="dashboard" key={pageKey}>{children}</div>
   </main>
@@ -177,7 +201,7 @@ const heroImages = { light: { large: heroLight, small: heroLightSmall }, dark: {
 
 function HeroArt() {
   const { large, small } = heroImages[useTheme()]
-  return <div className="hero-art"><img src={large} srcSet={`${small} 768w, ${large} 1536w`} sizes="(max-width: 760px) 100vw, 60vw" width={1536} height={1024} fetchPriority="high" alt="Developer building apps at a desk" /></div>
+  return <div className="hero-art"><img src={large} srcSet={`${small} 768w, ${large} 1024w`} sizes="(max-width: 760px) 100vw, 60vw" width={1024} height={675} fetchPriority="high" alt="Developer building apps at a desk" /></div>
 }
 
 function Swoosh({ className }: { className: string }) {
@@ -225,7 +249,7 @@ function WebsitesPage() {
 }
 
 function AboutPage() {
-  return <section className="standalone-panel about-page-panel about-panel" aria-labelledby="about-title"><p className="eyebrow">// about</p><h1 id="about-title">About Me</h1><div className="green-underline" /><p>I’m Rahul Kumar, a developer who loves turning ideas into real products. I enjoy building mobile apps, web apps and exploring new technologies.</p><ul><li><Code2 size={18} /> Build useful products</li><li><span className="book-icon">▤</span> Always learning</li><li><UserRound size={18} /> Open to collaboration</li><li><Coffee size={18} /> Powered by coffee</li></ul><p className="about-note">Let’s build something<br />cool together! <ArrowRight size={18} /></p><div className="about-callout"><span>Currently thinking about</span><strong>Small tools, useful products,<br />and a better internet together.</strong></div></section>
+  return <section className="standalone-panel about-page-panel about-panel" aria-labelledby="about-title"><p className="eyebrow">// about</p><h1 id="about-title">About Me</h1><div className="green-underline" /><p>I’m Rahul Kumar, a developer who loves turning ideas into real products. I enjoy building mobile apps, web apps and exploring new technologies.</p><ul><li><Code2 size={18} /> Build useful products</li><li><span className="book-icon">▤</span> Always learning</li><li><UserRound size={18} /> Open to collaboration</li><li><Coffee size={18} /> Powered by coffee</li></ul><p className="about-note">Let’s build something<br />cool together! <ArrowRight size={18} /></p></section>
 }
 
 function RequestPage({ type }: { type: 'problem' | 'demand' }) {
