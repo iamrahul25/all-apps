@@ -63,7 +63,7 @@ function PhoneSkeleton() {
 function AppCard({ app }: { app: AppProject }) {
   const iconUrl = app.icon ? appIcons[`./assets/app-icons/${app.icon}`] : undefined
   const screenshotUrl = app.screenshot ? appScreenshots[`./assets/app-screenshots/${app.screenshot}`] : undefined
-  return <article className="app-card" style={{ '--app-accent': app.accent } as React.CSSProperties}>
+  return <article className="app-card scroll-reveal" style={{ '--app-accent': app.accent } as React.CSSProperties}>
     <div className="app-card-top">
       <div className="app-card-info">
         <div className="app-card-head"><div className={`app-icon${iconUrl ? ' has-image' : ''}`}>{iconUrl ? <img src={iconUrl} alt="" width={56} height={56} loading="lazy" /> : <span>{app.initials}</span>}</div>{app.status && <span className="app-status">{app.status}</span>}</div>
@@ -93,7 +93,11 @@ function AppsHeroArt() {
   return <div className="apps-hero-art" aria-hidden="true">
     <span className="apps-art-blob" />
     <span className="apps-doodle">Tools in your pocket<svg viewBox="0 0 30 34"><path d="M10 2c-6 9 10 14 5 30M9 26l6 7 5-8" /></svg></span>
-    <span className="apps-art-phone"><AndroidIcon /></span>
+    <span className="apps-art-phone">
+      <span className="apps-orbit-ring" />
+      <span className="apps-orbit-dot" />
+      <AndroidIcon />
+    </span>
     <span className="apps-art-tile tile-image"><ImageIcon size={26} /></span>
     <span className="apps-art-tile tile-download"><Download size={26} /></span>
     <span className="apps-art-tile tile-settings"><Settings size={26} /></span>
@@ -110,7 +114,7 @@ function MoreSoonCard() {
 
 function WebsiteCard({ site }: { site: WebsiteProject }) {
   const previewUrl = site.image ? sitePreviews[`./assets/site-previews/${site.image}`] : undefined
-  return <article className="website-card">
+  return <article className="website-card scroll-reveal">
     <a className="website-link" href={site.url} target="_blank" rel="noreferrer" aria-label={`Open ${site.name} (opens in a new tab)`}>
       <div className={`site-preview ${site.tone}${previewUrl ? ' has-image' : ''}`}>{previewUrl ? <img src={previewUrl} alt="" loading="lazy" /> : <span>{site.name.slice(0, 2).toUpperCase()}</span>}</div>
       <div className="website-copy"><strong>{site.name}</strong><ExternalLink size={15} /><p>{site.description}</p>{site.tags.length > 0 && <ul className="site-tags">{site.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul>}</div>
@@ -176,6 +180,13 @@ function Shell({ children }: { children: React.ReactNode }) {
   useEffect(() => { setMenuOpen(false) }, [pathname])
   useEffect(() => { window.scrollTo(0, 0) }, [pageKey])
 
+  // Scroll-reveal: IntersectionObserver drives `.is-visible` on `.scroll-reveal` elements
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => { entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-visible'); observer.unobserve(e.target) } }) }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' })
+    const timer = setTimeout(() => { document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el)) }, 60)
+    return () => { clearTimeout(timer); observer.disconnect() }
+  }, [pageKey])
+
   useEffect(() => {
     if (!menuOpen) return
     const closeOnOutsideTap = (event: PointerEvent) => { if (!mobileNavRef.current?.contains(event.target as Node)) setMenuOpen(false) }
@@ -201,7 +212,38 @@ const heroImages = { light: { large: heroLight, small: heroLightSmall }, dark: {
 
 function HeroArt() {
   const { large, small } = heroImages[useTheme()]
-  return <div className="hero-art"><img src={large} srcSet={`${small} 768w, ${large} 1024w`} sizes="(max-width: 760px) 100vw, 60vw" width={1024} height={675} fetchPriority="high" alt="Developer building apps at a desk" /></div>
+  return <div className="hero-art">
+    <img src={large} srcSet={`${small} 768w, ${large} 1024w`} sizes="(max-width: 760px) 100vw, 60vw" width={1024} height={675} fetchPriority="high" alt="Developer building apps at a desk" />
+    <span className="hero-art-badge" aria-hidden="true">ship it! ✦</span>
+    <span className="hero-status-pill" aria-hidden="true"><span className="pulse-dot" /> crafting daily</span>
+  </div>
+}
+
+const particles = [
+  { left: '8%', top: '18%', size: 6, bg: 'var(--color-highlight)', dur: '5.5s', delay: '0s', dx: '18px' },
+  { left: '22%', top: '55%', size: 4, bg: 'var(--color-accent)', dur: '6.2s', delay: '1.4s', dx: '-14px' },
+  { left: '38%', top: '30%', size: 8, bg: 'var(--color-secondary-soft)', dur: '7s', delay: '0.6s', dx: '24px' },
+  { left: '52%', top: '70%', size: 5, bg: 'var(--color-highlight)', dur: '5s', delay: '2.2s', dx: '-20px' },
+  { left: '68%', top: '22%', size: 7, bg: 'var(--color-accent)', dur: '6.8s', delay: '0.9s', dx: '12px' },
+  { left: '80%', top: '48%', size: 4, bg: 'var(--color-secondary-soft)', dur: '5.8s', delay: '1.8s', dx: '-16px' },
+  { left: '15%', top: '78%', size: 5, bg: 'var(--color-highlight)', dur: '7.5s', delay: '3s', dx: '22px' },
+  { left: '90%', top: '65%', size: 6, bg: 'var(--color-accent)', dur: '6s', delay: '2.6s', dx: '-10px' },
+]
+
+function HeroFloaters() {
+  return <div className="hero-floaters" aria-hidden="true">
+    <span className="hero-floater floater-dot" />
+    <span className="hero-floater floater-star">✦</span>
+    <span className="hero-floater floater-sparkle-1">✧</span>
+    <span className="hero-floater floater-sparkle-2">✦</span>
+    <span className="hero-floater floater-squiggle" />
+    <span className="hero-floater floater-triangle" />
+    <span className="hero-floater floater-badge"><Code2 size={13} /> <span>crafting</span></span>
+  </div>
+}
+
+function HeroParticles() {
+  return <div className="hero-particles" aria-hidden="true">{particles.map((p, i) => <span key={i} className="hero-particle" style={{ left: p.left, top: p.top, width: p.size, height: p.size, background: p.bg, '--dur': p.dur, '--delay': p.delay, '--dx': p.dx } as React.CSSProperties} />)}</div>
 }
 
 function Swoosh({ className }: { className: string }) {
@@ -216,24 +258,24 @@ const heroPillars = [
 ]
 
 const homeLinks = [
-  { to: '/apps', label: 'apps', title: 'Explore my apps', description: 'Useful tools for everyday life.', icon: Smartphone },
-  { to: '/websites', label: 'websites', title: 'See web projects', description: 'Ideas turned into real products.', icon: Globe2 },
-  { to: '/about', label: 'about', title: 'Meet the maker', description: 'My journey, skills and interests.', icon: UserRound },
-  { to: '/problem', label: 'problem', title: 'Share a problem', description: 'Real problems lead to better solutions.', icon: MessageSquareWarning },
-  { to: '/demand', label: 'demand', title: 'Request an idea', description: 'Have an idea? Let’s build it together.', icon: Lightbulb },
+  { to: '/apps', label: 'apps', title: 'Explore my apps', description: 'Useful tools for everyday life.', icon: Smartphone, accent: '#3f9a5c' },
+  { to: '/websites', label: 'websites', title: 'See web projects', description: 'Ideas turned into real products.', icon: Globe2, accent: '#5a64b8' },
+  { to: '/about', label: 'about', title: 'Meet the maker', description: 'My journey, skills and interests.', icon: UserRound, accent: '#3f6fc2' },
+  { to: '/problem', label: 'problem', title: 'Share a problem', description: 'Real problems lead to better solutions.', icon: MessageSquareWarning, accent: '#d6524c' },
+  { to: '/demand', label: 'demand', title: 'Request an idea', description: 'Have an idea? Let’s build it together.', icon: Lightbulb, accent: '#f5a524' },
 ]
 
 function HomePage() {
-  return <><section className="hero-panel home-hero" aria-labelledby="page-title"><div className="hero-copy">
+  return <><section className="hero-panel home-hero" aria-labelledby="page-title"><span className="hero-orb" aria-hidden="true" /><HeroParticles /><HeroFloaters /><div className="hero-copy">
     <p className="eyebrow hero-eyebrow">Home</p>
-    <p className="hand-label">Hey, I’m <svg className="hand-marks" viewBox="0 0 26 18" aria-hidden="true"><path d="M3 15 L9 5 M12 16 L23 9" /></svg></p>
+    <p className="hand-label">Hey, I'm <svg className="hand-marks" viewBox="0 0 26 18" aria-hidden="true"><path d="M3 15 L9 5 M12 16 L23 9" /></svg></p>
     <h1 id="page-title">Rahul Kumar</h1>
     <Swoosh className="name-swoosh" />
     <p className="hero-intro">I build apps, websites and little ideas that make life easier.</p>
     <ul className="hero-pillars">{heroPillars.map(({ label, icon: Icon }) => <li key={label}><Icon size={17} /> {label}</li>)}</ul>
     <div className="hero-actions"><Link className="hero-button" to="/apps">Explore My Work <ArrowRight size={17} /></Link><p className="hero-quote">Small tools.<br />Big impact.<Swoosh className="quote-swoosh" /></p></div>
   </div><HeroArt /></section>
-  <nav className="home-links" aria-label="Explore">{homeLinks.map(({ to, label, title, description, icon: Icon }) => <Link key={to} to={to}><span className="home-link-label"><Icon size={18} /> // {label}</span><strong>{title}</strong><span className="home-link-description">{description}</span><span className="home-link-arrow"><ArrowRight size={16} /></span></Link>)}</nav></>
+  <nav className="home-links" aria-label="Explore">{homeLinks.map(({ to, label, title, description, icon: Icon, accent }) => <Link key={to} to={to} style={{ '--link-accent': accent } as React.CSSProperties}><span className="home-link-label"><Icon size={18} /> // {label}</span><strong>{title}</strong><span className="home-link-description">{description}</span><span className="home-link-arrow"><ArrowRight size={16} /></span></Link>)}</nav></>
 }
 
 function AppsPage() {
